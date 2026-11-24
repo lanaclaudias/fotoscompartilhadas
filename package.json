@@ -1,0 +1,18 @@
+{
+  "name": "fotoscompartilhadas",
+  "version": "1.0.0",
+  "description": "Site para convidados enviarem fotos do casamento + painel dos noivos com QR Code",
+  "main": "app.js",
+  "scripts": {
+    "start": "node local.js"
+  },
+  "engines": {
+    "node": ">=20.12"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.119.2",
+    "client-zip": "^2.5.1",
+    "express": "^4.21.2",
+    "qrcode": "^1.5.4"
+  }
+}

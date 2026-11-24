@@ -1,0 +1,353 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>Painel dos noivos</title>
+  <link rel="stylesheet" href="/estilo.css">
+  <style>
+    main { max-width: 1100px; margin: 0 auto; padding: 2rem 1.25rem 4rem; }
+    h1 { font-weight: normal; font-size: 1.9rem; margin: 0; }
+
+    #tela-login { max-width: 360px; margin: 12vh auto 0; text-align: center; }
+    #tela-login form { display: grid; gap: .75rem; margin-top: 1rem; }
+    .msg-erro { color: var(--erro); font-size: .9rem; min-height: 1.3em; margin: 0; }
+
+    .topo { display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap; margin-bottom: 1.5rem; }
+
+    .numeros { display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 1.5rem; }
+    .numeros .cartao { padding: 1rem 1.25rem; min-width: 150px; }
+    .numeros strong { display: block; font-size: 1.8rem; font-weight: 600; }
+    .numeros span { color: var(--suave); font-size: .85rem; }
+
+    .grade-topo { display: grid; grid-template-columns: 1fr 300px; gap: 1.5rem; align-items: start; }
+    @media (max-width: 800px) { .grade-topo { grid-template-columns: 1fr; } }
+
+    .qr { text-align: center; }
+    .qr img { width: 100%; max-width: 240px; display: block; margin: .5rem auto; border-radius: 8px; }
+    .qr .url { font-size: .8rem; word-break: break-all; color: var(--suave); margin: 0 0 1rem; }
+    .qr .acoes { display: grid; gap: .5rem; }
+    .aviso-local { font-size: .78rem; background: #fff6e0; border: 1px solid #f0dfb0; border-radius: 8px; padding: .5rem .7rem; margin-top: .75rem; text-align: left; }
+
+    .filtros { display: flex; gap: .75rem; flex-wrap: wrap; align-items: center; margin-bottom: 1rem; }
+    .filtros select { width: auto; min-width: 220px; }
+
+    .galeria { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: .75rem; }
+    .foto { background: #fff; border: 1px solid var(--borda); border-radius: 10px; overflow: hidden; display: flex; flex-direction: column; }
+    .foto a.midia { display: block; aspect-ratio: 1; background: #eee7dc; }
+    .foto img, .foto video { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .foto .info { padding: .5rem .6rem; font-size: .78rem; display: flex; justify-content: space-between; align-items: center; gap: .4rem; }
+    .foto .info div { overflow: hidden; }
+    .foto .info strong { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .foto .info button { border: 0; background: none; cursor: pointer; font-size: 1rem; padding: .2rem; opacity: .55; }
+    .foto .info button:hover { opacity: 1; }
+    .vazio { text-align: center; padding: 3rem 1rem; color: var(--suave); }
+
+    /* Impressão: só o cartão do QR Code */
+    #impressao { display: none; }
+    @media print {
+      body { background: #fff; }
+      main { display: none; }
+      #impressao { display: block; text-align: center; padding-top: 8vh; }
+      #impressao h2 { font-family: Georgia, serif; font-weight: normal; font-size: 2.4rem; margin: 0 0 .25rem; }
+      #impressao p { font-size: 1.2rem; margin: .25rem 0; }
+      #impressao img { width: 9cm; height: 9cm; margin: 1.5rem auto; display: block; }
+    }
+  </style>
+</head>
+<body>
+<main>
+  <!-- Login -->
+  <section id="tela-login" class="cartao oculto">
+    <h1 class="serif">Painel dos noivos</h1>
+    <form id="form-login">
+      <input class="campo" type="password" id="senha" placeholder="Senha" autocomplete="current-password" required>
+      <button class="botao" type="submit">Entrar</button>
+      <p class="msg-erro" id="erro-login"></p>
+    </form>
+  </section>
+
+  <!-- Painel -->
+  <section id="tela-painel" class="oculto">
+    <div class="topo">
+      <h1 class="serif" id="titulo">Painel</h1>
+      <button class="botao secundario" id="sair">Sair</button>
+    </div>
+
+    <div class="grade-topo">
+      <div>
+        <div class="numeros">
+          <div class="cartao"><strong id="n-fotos">0</strong><span>fotos e vídeos</span></div>
+          <div class="cartao"><strong id="n-convidados">0</strong><span>convidados enviaram</span></div>
+        </div>
+
+        <div class="filtros">
+          <select class="campo" id="filtro"></select>
+          <button class="botao" id="baixar-zip">⬇ Baixar tudo (.zip)</button>
+          <button class="botao secundario" id="atualizar">↻ Atualizar</button>
+        </div>
+        <p class="suave" id="zip-status" style="font-size:.85rem;margin:0"></p>
+      </div>
+
+      <div class="cartao qr">
+        <strong>QR Code para os convidados</strong>
+        <img id="qr-img" alt="QR Code do site">
+        <p class="url" id="qr-url"></p>
+        <div class="acoes">
+          <button class="botao" id="imprimir">🖨 Imprimir cartão</button>
+          <a class="botao secundario" href="/api/painel/qrcode.png?baixar=1">Baixar QR (PNG)</a>
+        </div>
+        <div class="aviso-local oculto" id="aviso-local">
+          Este endereço é da sua rede local: só funciona em celulares no mesmo Wi-Fi.
+          Para o casamento, imprima o QR Code acessando o painel pelo site no ar (Vercel).
+        </div>
+      </div>
+    </div>
+
+    <div class="galeria" id="galeria" style="margin-top:1.5rem"></div>
+  </section>
+</main>
+
+<!-- Conteúdo da impressão -->
+<div id="impressao">
+  <h2 id="imp-noivos"></h2>
+  <p>Compartilhe com a gente as fotos que você tirou!</p>
+  <img id="imp-qr" alt="">
+  <p>Aponte a câmera do celular para o código</p>
+  <p style="color:#777;font-size:.95rem" id="imp-url"></p>
+</div>
+
+<script type="module">
+import { downloadZip } from '/vendor/client-zip.js';
+{
+  const $ = (id) => document.getElementById(id);
+  let dados = { fotos: [], convidados: [] };
+  let evento = {};
+
+  async function api(url, opcoes) {
+    const r = await fetch(url, opcoes);
+    if (r.status === 401) { mostrarLogin(); throw new Error('401'); }
+    return r;
+  }
+
+  function mostrarLogin() {
+    $('tela-login').classList.remove('oculto');
+    $('tela-painel').classList.add('oculto');
+    $('senha').focus();
+  }
+
+  $('form-login').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    $('erro-login').textContent = '';
+    const r = await fetch('/api/painel/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ senha: $('senha').value }),
+    });
+    if (!r.ok) { $('erro-login').textContent = 'Senha incorreta'; return; }
+    $('senha').value = '';
+    carregar();
+  });
+
+  $('sair').addEventListener('click', async () => {
+    await fetch('/api/painel/logout', { method: 'POST' });
+    mostrarLogin();
+  });
+
+  function formatarHora(iso) {
+    const d = new Date(iso);
+    return d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }) + ' ' +
+      d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+  }
+
+  function renderizar() {
+    const filtro = $('filtro').value;
+    const lista = filtro ? dados.fotos.filter((f) => f.convidadoId === filtro) : dados.fotos;
+
+    $('n-fotos').textContent = dados.fotos.length;
+    $('n-convidados').textContent = dados.convidados.length;
+    if (!zipando) $('baixar-zip').textContent = filtro ? '⬇ Baixar deste convidado (.zip)' : '⬇ Baixar tudo (.zip)';
+
+    const g = $('galeria');
+    g.innerHTML = '';
+    if (!lista.length) {
+      const v = document.createElement('div');
+      v.className = 'vazio';
+      v.style.gridColumn = '1 / -1';
+      v.textContent = 'Nenhuma foto ainda. Compartilhe o QR Code com os convidados!';
+      g.appendChild(v);
+      return;
+    }
+
+    for (const f of lista) {
+      const url = f.url || '';
+      const card = document.createElement('div');
+      card.className = 'foto';
+
+      const a = document.createElement('a');
+      a.className = 'midia';
+      a.href = url;
+      a.target = '_blank';
+      let midia;
+      if (f.tipo.startsWith('video/')) {
+        midia = document.createElement('video');
+        midia.src = url + '#t=0.5';
+        midia.preload = 'metadata';
+        midia.muted = true;
+      } else {
+        midia = document.createElement('img');
+        midia.src = url;
+        midia.loading = 'lazy';
+        midia.alt = 'Foto de ' + f.nome;
+      }
+      a.appendChild(midia);
+
+      const info = document.createElement('div');
+      info.className = 'info';
+      const txt = document.createElement('div');
+      const nome = document.createElement('strong');
+      nome.textContent = f.nome;
+      const hora = document.createElement('span');
+      hora.className = 'suave';
+      hora.textContent = formatarHora(f.enviadaEm);
+      txt.append(nome, hora);
+
+      const baixar = document.createElement('a');
+      baixar.href = '/api/painel/arquivo/' + f.id;
+      baixar.title = 'Baixar';
+      baixar.textContent = '⬇';
+      baixar.style.textDecoration = 'none';
+      baixar.style.opacity = '.55';
+
+      const apagar = document.createElement('button');
+      apagar.title = 'Apagar';
+      apagar.textContent = '🗑';
+      apagar.addEventListener('click', async () => {
+        if (!confirm(`Apagar esta foto de ${f.nome}? Não dá para desfazer.`)) return;
+        await api('/api/painel/fotos/' + f.id, { method: 'DELETE' });
+        carregar();
+      });
+
+      const botoes = document.createElement('span');
+      botoes.style.display = 'flex';
+      botoes.style.alignItems = 'center';
+      botoes.style.gap = '.2rem';
+      botoes.append(baixar, apagar);
+
+      info.append(txt, botoes);
+      card.append(a, info);
+      g.appendChild(card);
+    }
+  }
+
+  function preencherFiltro() {
+    const sel = $('filtro');
+    const atual = sel.value;
+    sel.innerHTML = '';
+    const todos = document.createElement('option');
+    todos.value = '';
+    todos.textContent = `Todos os convidados (${dados.fotos.length})`;
+    sel.appendChild(todos);
+    for (const c of dados.convidados) {
+      const o = document.createElement('option');
+      o.value = c.convidadoId;
+      o.textContent = `${c.nome} (${c.total})`;
+      sel.appendChild(o);
+    }
+    if ([...sel.options].some((o) => o.value === atual)) sel.value = atual;
+  }
+
+  async function carregar() {
+    try {
+      const r = await api('/api/painel/fotos');
+      dados = await r.json();
+    } catch { return; }
+
+    $('tela-login').classList.add('oculto');
+    $('tela-painel').classList.remove('oculto');
+
+    $('titulo').textContent = evento.noivos ? `Fotos • ${evento.noivos}` : 'Painel';
+    $('qr-url').textContent = dados.urlSite;
+    const qr = '/api/painel/qrcode.png?v=' + encodeURIComponent(dados.urlSite);
+    $('qr-img').src = qr;
+    $('imp-qr').src = qr;
+    $('imp-url').textContent = dados.urlSite;
+    $('imp-noivos').textContent = evento.noivos || '';
+    const local = /^http:\/\/(localhost|127\.|10\.|192\.168\.|172\.(1[6-9]|2\d|3[01])\.)/.test(dados.urlSite);
+    $('aviso-local').classList.toggle('oculto', !local);
+
+    preencherFiltro();
+    renderizar();
+  }
+
+  $('filtro').addEventListener('change', renderizar);
+  $('atualizar').addEventListener('click', carregar);
+  $('imprimir').addEventListener('click', () => window.print());
+
+  // ---------- ZIP montado no navegador (uma pasta por convidado) ----------
+  function nomeSeguro(s) {
+    return String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '')
+      .replace(/[^a-zA-Z0-9._ -]/g, '').trim().slice(0, 60) || 'arquivo';
+  }
+
+  let zipando = false;
+  $('baixar-zip').addEventListener('click', async () => {
+    if (zipando) return;
+    zipando = true;
+    const botao = $('baixar-zip');
+    const status = $('zip-status');
+    botao.disabled = true;
+    try {
+      await carregar(); // links novos (os anteriores expiram em 1h)
+      const filtro = $('filtro').value;
+      const lista = (filtro ? dados.fotos.filter((f) => f.convidadoId === filtro) : dados.fotos).filter((f) => f.url);
+      if (!lista.length) { status.textContent = 'Nenhuma foto para baixar.'; return; }
+
+      const convidado = filtro ? dados.convidados.find((c) => c.convidadoId === filtro) : null;
+      const nomeZip = nomeSeguro(`fotos ${evento.noivos || 'casamento'}${convidado ? ' - ' + convidado.nome : ''}`).replace(/ /g, '-') + '.zip';
+
+      async function* arquivos() {
+        for (let i = 0; i < lista.length; i++) {
+          const f = lista[i];
+          status.textContent = `Baixando ${i + 1} de ${lista.length}…`;
+          const r = await fetch(f.url);
+          if (!r.ok) continue;
+          yield {
+            name: `${nomeSeguro(f.nome)}/${String(i + 1).padStart(4, '0')}_${nomeSeguro(f.nomeOriginal || 'foto')}`,
+            lastModified: new Date(f.tiradaEm || f.enviadaEm),
+            input: r,
+          };
+        }
+      }
+
+      if (window.showSaveFilePicker) {
+        // Chrome/Edge: grava direto no disco, sem limite de memória
+        let destino;
+        try {
+          destino = await window.showSaveFilePicker({ suggestedName: nomeZip, types: [{ description: 'ZIP', accept: { 'application/zip': ['.zip'] } }] });
+        } catch { status.textContent = ''; return; } // cancelou
+        await downloadZip(arquivos()).body.pipeTo(await destino.createWritable());
+      } else {
+        const blob = await downloadZip(arquivos()).blob();
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = nomeZip;
+        a.click();
+        setTimeout(() => URL.revokeObjectURL(a.href), 60000);
+      }
+      status.textContent = `✓ ${lista.length} arquivos baixados`;
+    } catch (e) {
+      console.error(e);
+      status.textContent = 'Falha ao gerar o .zip. Tente de novo.';
+    } finally {
+      zipando = false;
+      botao.disabled = false;
+    }
+  });
+
+  fetch('/api/evento').then((r) => r.json()).then((ev) => { evento = ev; }).finally(carregar);
+}
+</script>
+</body>
+</html>

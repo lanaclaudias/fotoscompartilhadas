@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Envie suas fotos 💍</title>
+  <link rel="stylesheet" href="/estilo.css">
+  <style>
+    main { max-width: 480px; margin: 0 auto; padding: 2.5rem 1.25rem 4rem; }
+    header { text-align: center; margin-bottom: 2rem; }
+    header .enfeite { color: var(--destaque); letter-spacing: .3em; font-size: .8rem; text-transform: uppercase; }
+    header h1 { font-size: 2.4rem; font-weight: normal; margin: .4rem 0 .2rem; }
+    header .data { color: var(--suave); margin: 0; }
+    header .mensagem { margin: 1.25rem 0 0; }
+
+    .cartao h2 { font-size: 1.15rem; margin: 0 0 .25rem; }
+    .cartao p { margin: 0 0 1rem; }
+    form { display: grid; gap: .75rem; }
+
+    .quem { display: flex; justify-content: space-between; align-items: center; font-size: .9rem; margin-bottom: 1rem; }
+    .quem button { background: none; border: 0; color: var(--destaque); cursor: pointer; text-decoration: underline; padding: 0; }
+
+    .escolher { width: 100%; padding: 1.25rem; font-size: 1.05rem; }
+    #entrada { display: none; }
+
+    .lista { list-style: none; padding: 0; margin: 1.25rem 0 0; display: grid; gap: .5rem; }
+    .lista li { display: grid; grid-template-columns: 44px 1fr auto; gap: .75rem; align-items: center; font-size: .85rem; }
+    .lista .mini { width: 44px; height: 44px; border-radius: 8px; object-fit: cover; background: #eee7dc; display: grid; place-items: center; font-size: 1.2rem; }
+    .lista .nome { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .barra { height: 4px; background: #efe9e0; border-radius: 2px; margin-top: 4px; overflow: hidden; }
+    .barra > div { height: 100%; width: 0; background: var(--destaque); transition: width .2s; }
+    .status.ok { color: var(--ok); }
+    .status.erro { color: var(--erro); }
+
+    .resumo { text-align: center; margin-top: 1.25rem; font-weight: 600; }
+    .resumo.ok { color: var(--ok); }
+  </style>
+</head>
+<body>
+<main>
+  <header>
+    <div class="enfeite">Nosso casamento</div>
+    <h1 class="serif" id="noivos">&nbsp;</h1>
+    <p class="data" id="data"></p>
+    <p class="mensagem" id="mensagem"></p>
+  </header>
+
+  <!-- Passo 1: nome -->
+  <section class="cartao oculto" id="passo-nome">
+    <h2>Como você se chama?</h2>
+    <p class="suave">Assim os noivos sabem quem enviou cada foto.</p>
+    <form id="form-nome">
+      <input class="campo" id="campo-nome" maxlength="60" placeholder="Ex.: Tia Marta" autocomplete="name" required>
+      <button class="botao" type="submit">Continuar</button>
+    </form>
+  </section>
+
+  <!-- Passo 2: envio -->
+  <section class="cartao oculto" id="passo-envio">
+    <div class="quem">
+      <span>Enviando como <strong id="nome-atual"></strong></span>
+      <button type="button" id="trocar">trocar</button>
+    </div>
+    <button class="botao escolher" id="escolher" type="button">📷 Escolher fotos e vídeos</button>
+    <input type="file" id="entrada" accept="image/*,video/*" multiple>
+    <ul class="lista" id="lista"></ul>
+    <div class="resumo" id="resumo"></div>
+  </section>
+</main>
+
+<script>
+(() => {
+  const $ = (id) => document.getElementById(id);
+  let evento = { tamanhoMaximoMB: 300, comprimirFotos: true };
+
+  // ---------- Identificação do convidado (nome + id salvo no celular) ----------
+  function obterId() {
+    let id = localStorage.getItem('convidadoId');
+    if (!id) {
+      id = (crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2));
+      localStorage.setItem('convidadoId', id);
+    }
+    return id;
+  }
+  const convidadoId = obterId();
+
+  function mostrarPasso() {
+    const nome = localStorage.getItem('convidadoNome');
+    $('passo-nome').classList.toggle('oculto', !!nome);
+    $('passo-envio').classList.toggle('oculto', !nome);
+    if (nome) $('nome-atual').textContent = nome;
+    else $('campo-nome').focus();
+  }
+
+  $('form-nome').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const nome = $('campo-nome').value.trim();
+    if (!nome) return;
+    localStorage.setItem('convidadoNome', nome);
+    mostrarPasso();
+  });
+
+  $('trocar').addEventListener('click', () => {
+    $('campo-nome').value = localStorage.getItem('convidadoNome') || '';
+    localStorage.removeItem('convidadoNome');
+    mostrarPasso();
+  });
+
+  // ---------- Compressão de fotos no navegador (envio mais rápido no 4G) ----------
+  async function comprimir(file) {
+    if (!evento.comprimirFotos) return file;
+    if (!/^image\/(jpeg|png|webp)$/.test(file.type) || file.size < 1.5 * 1024 * 1024) return file;
+    try {
+      const bmp = await createImageBitmap(file, { imageOrientation: 'from-image' });
+      const max = 2560;
+      const escala = Math.min(1, max / Math.max(bmp.width, bmp.height));
+      const canvas = document.createElement('canvas');
+      canvas.width = Math.round(bmp.width * escala);
+      canvas.height = Math.round(bmp.height * escala);
+      canvas.getContext('2d').drawImage(bmp, 0, 0, canvas.width, canvas.height);
+      const blob = await new Promise((r) => canvas.toBlob(r, 'image/jpeg', 0.85));
+      if (!blob || blob.size >= file.size) return file;
+      const nome = file.name.replace(/\.[^.]+$/, '') + '.jpg';
+      return new File([blob], nome, { type: 'image/jpeg', lastModified: file.lastModified });
+    } catch {
+      return file; // formato que o navegador não consegue ler (ex.: HEIC) → envia original
+    }
+  }
+
+  // Alguns celulares não informam o tipo (ex.: HEIC) → deduz pela extensão
+  const TIPOS = { heic: 'image/heic', heif: 'image/heif', jpg: 'image/jpeg', jpeg: 'image/jpeg', png: 'image/png',
+    webp: 'image/webp', gif: 'image/gif', mov: 'video/quicktime', mp4: 'video/mp4', m4v: 'video/x-m4v', '3gp': 'video/3gpp' };
+  function comTipo(file) {
+    if (file.type) return file;
+    const ext = (file.name.split('.').pop() || '').toLowerCase();
+    return TIPOS[ext] ? new File([file], file.name, { type: TIPOS[ext], lastModified: file.lastModified }) : file;
+  }
+
+  async function postJSON(url, corpo) {
+    let r;
+    try {
+      r = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(corpo) });
+    } catch { throw new Error('Sem conexão'); }
+    const j = await r.json().catch(() => ({}));
+    if (!r.ok) throw new Error(j.erro || 'Falha no envio');
+    return j;
+  }
+
+  // Envia o arquivo direto para o Supabase Storage (URL assinada), com barra de progresso
+  function enviarArquivo(urlEnvio, file, aoProgresso) {
+    return new Promise((resolve, reject) => {
+      const fd = new FormData();
+      fd.append('cacheControl', '3600');
+      fd.append('', file, file.name);
+      const xhr = new XMLHttpRequest();
+      xhr.open('PUT', urlEnvio);
+      xhr.upload.onprogress = (e) => e.lengthComputable && aoProgresso(e.loaded / e.total);
+      xhr.onload = () => {
+        if (xhr.status >= 200 && xhr.status < 300) return resolve();
+        if (xhr.status === 413) return reject(new Error(`Arquivo maior que ${evento.tamanhoMaximoMB} MB`));
+        reject(new Error('Falha no envio'));
+      };
+      xhr.onerror = () => reject(new Error('Sem conexão'));
+      xhr.send(fd);
+    });
+  }
+
+  // ---------- Envio ----------
+  async function enviar(file, original, aoProgresso) {
+    const nome = localStorage.getItem('convidadoNome') || 'Anônimo';
+    const ini = await postJSON('/api/upload/iniciar', { tipo: file.type, tamanho: file.size, nomeArquivo: file.name });
+    await enviarArquivo(ini.urlEnvio, file, aoProgresso);
+    await postJSON('/api/upload/confirmar', {
+      caminho: ini.caminho,
+      tipo: file.type,
+      tamanho: file.size,
+      nomeOriginal: original.name,
+      nome,
+      convidadoId,
+      tiradaEm: original.lastModified || null,
+    });
+  }
+
+  function criarItem(file) {
+    const li = document.createElement('li');
+    let mini;
+    if (file.type.startsWith('image/')) {
+      mini = document.createElement('img');
+      mini.src = URL.createObjectURL(file);
+    } else {
+      mini = document.createElement('div');
+      mini.textContent = '🎬';
+    }
+    mini.className = 'mini';
+    const meio = document.createElement('div');
+    const nome = document.createElement('div');
+    nome.className = 'nome';
+    nome.textContent = file.name;
+    const barra = document.createElement('div');
+    barra.className = 'barra';
+    const preench = document.createElement('div');
+    barra.appendChild(preench);
+    meio.append(nome, barra);
+    const status = document.createElement('span');
+    status.className = 'status suave';
+    status.textContent = 'na fila';
+    li.append(mini, meio, status);
+    $('lista').appendChild(li);
+    return {
+      progresso: (p) => { preench.style.width = Math.round(p * 100) + '%'; },
+      status: (txt, cls) => { status.textContent = txt; status.className = 'status ' + (cls || 'suave'); },
+    };
+  }
+
+  let enviando = false;
+  const fila = [];
+  let okCount = 0, erroCount = 0;
+
+  async function processarFila() {
+    if (enviando) return;
+    enviando = true;
+    $('resumo').textContent = '';
+    $('resumo').className = 'resumo';
+    while (fila.length) {
+      const { file, item } = fila.shift();
+      item.status('preparando…');
+      const pronto = comTipo(await comprimir(file));
+      if (pronto.size > evento.tamanhoMaximoMB * 1024 * 1024) {
+        item.status(`maior que ${evento.tamanhoMaximoMB} MB`, 'erro'); erroCount++; continue;
+      }
+      let tentativa = 0;
+      while (true) {
+        try {
+          item.status('enviando…');
+          await enviar(pronto, file, item.progresso);
+          item.progresso(1); item.status('✓ enviada', 'ok'); okCount++;
+          break;
+        } catch (err) {
+          if (++tentativa < 3 && err.message === 'Sem conexão') {
+            item.status('tentando de novo…');
+            await new Promise((r) => setTimeout(r, 2000 * tentativa));
+            continue;
+          }
+          item.status(err.message, 'erro'); erroCount++;
+          break;
+        }
+      }
+    }
+    enviando = false;
+    const r = $('resumo');
+    if (erroCount === 0) {
+      r.textContent = `Obrigado! ${okCount} ${okCount === 1 ? 'arquivo enviado' : 'arquivos enviados'} ❤️`;
+      r.className = 'resumo ok';
+    } else {
+      r.textContent = `${okCount} enviados, ${erroCount} com erro. Tente enviar os que falharam de novo.`;
+    }
+  }
+
+  $('escolher').addEventListener('click', () => $('entrada').click());
+  $('entrada').addEventListener('change', (e) => {
+    const arquivos = [...e.target.files];
+    e.target.value = '';
+    if (!arquivos.length) return;
+    for (const file of arquivos) fila.push({ file, item: criarItem(file) });
+    processarFila();
+  });
+
+  window.addEventListener('beforeunload', (e) => {
+    if (enviando) { e.preventDefault(); e.returnValue = ''; }
+  });
+
+  // ---------- Carrega dados do evento ----------
+  fetch('/api/evento').then((r) => r.json()).then((ev) => {
+    evento = ev;
+    $('noivos').textContent = ev.noivos;
+    $('data').textContent = ev.data;
+    $('mensagem').textContent = ev.mensagem;
+    document.title = `Fotos • ${ev.noivos}`;
+  }).catch(() => {});
+
+  mostrarPasso();
+})();
+</script>
+</body>
+</html>
