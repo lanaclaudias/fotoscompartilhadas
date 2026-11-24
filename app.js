@@ -248,6 +248,42 @@ app.delete('/api/painel/fotos/:id', exigirPainel, exigirSupabase, async (req, re
   res.json({ ok: true });
 });
 
+// Lista todos os arquivos de convidados no Storage (inclui arquivos "soltos" sem registro na tabela)
+async function listarArquivosConvidados() {
+  const caminhos = [];
+  const { data: raiz, error } = await supabase.storage.from(BUCKET).list('', { limit: 1000 });
+  if (error) throw error;
+  for (const item of raiz || []) {
+    if (item.name === PASTA_SITE) continue; // foto do casal fica
+    if (item.id) { caminhos.push(item.name); continue; } // arquivo na raiz
+    for (let de = 0; ; de += 1000) { // pasta (um dia de envios)
+      const { data, error: e2 } = await supabase.storage.from(BUCKET).list(item.name, { limit: 1000, offset: de });
+      if (e2) throw e2;
+      (data || []).filter((o) => o.id).forEach((o) => caminhos.push(`${item.name}/${o.name}`));
+      if (!data || data.length < 1000) break;
+    }
+  }
+  return caminhos;
+}
+
+// Apaga TODAS as fotos e vídeos (Storage + tabela). Exige digitar APAGAR.
+app.post('/api/painel/apagar-tudo', exigirPainel, exigirSupabase, async (req, res) => {
+  if ((req.body || {}).confirmacao !== 'APAGAR') return res.status(400).json({ erro: 'Confirmação inválida' });
+  try {
+    const caminhos = await listarArquivosConvidados();
+    for (let i = 0; i < caminhos.length; i += 500) {
+      const { error } = await supabase.storage.from(BUCKET).remove(caminhos.slice(i, i + 500));
+      if (error) throw error;
+    }
+    const { error, count } = await supabase.from(TABELA).delete({ count: 'exact' }).not('id', 'is', null);
+    if (error) throw error;
+    res.json({ ok: true, arquivos: caminhos.length, registros: count || 0 });
+  } catch (e) {
+    console.error('apagar-tudo', e);
+    res.status(500).json({ erro: 'Não foi possível apagar tudo. Tente novamente.' });
+  }
+});
+
 // Foto do casal: 1) pede URL de envio  2) confirma (apaga as anteriores)  3) ou remove
 app.post('/api/painel/capa/iniciar', exigirPainel, exigirSupabase, async (req, res) => {
   const ext = { 'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp' }[(req.body || {}).tipo];

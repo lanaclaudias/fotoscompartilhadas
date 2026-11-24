@@ -117,6 +117,22 @@
     .visor-nav.esq { left: 1rem; } .visor-nav.dir { right: 1rem; }
     @media (max-width: 640px) { .visor-palco { padding: 0 .5rem 1rem; } .visor-nav { top: auto; bottom: 1.25rem; transform: none; } }
 
+    /* ---------- Zona de perigo / modal ---------- */
+    .perigo-bloco h3 { color: var(--erro); }
+    .modal-fundo { position: fixed; inset: 0; z-index: 60; background: rgba(20, 16, 10, .45); backdrop-filter: blur(3px); display: grid; place-items: center; padding: 1.25rem; }
+    .modal { width: 100%; max-width: 440px; padding: 2rem 1.75rem 1.5rem; text-align: center; }
+    .modal-icone { width: 56px; height: 56px; margin: 0 auto 1rem; border-radius: 50%; background: #fcf1f0; color: var(--erro); display: grid; place-items: center; }
+    .modal-icone .ic { width: 26px; height: 26px; }
+    .modal h2 { font-family: var(--fonte-titulo); font-weight: 500; font-size: 1.7rem; margin: 0 0 .5rem; }
+    .modal p { color: var(--texto-2); margin: 0 0 1rem; font-size: .92rem; }
+    .modal-dica { display: grid; gap: .1rem; justify-items: center; background: var(--ouro-fundo); border: 1px solid #eadcbf; border-radius: 12px; padding: .7rem; margin-bottom: 1.2rem; font-size: .85rem; color: var(--ouro-escuro); }
+    .modal label { display: block; text-align: left; font-size: .85rem; color: var(--texto-2); margin-bottom: .4rem; }
+    .modal .campo { text-align: center; letter-spacing: .2em; font-weight: 600; }
+    .modal .msg-erro { margin: .5rem 0 0; }
+    .modal-acoes { display: grid; grid-template-columns: 1fr 1fr; gap: .6rem; margin-top: .6rem; }
+    .botao-perigo { background: var(--erro); box-shadow: 0 6px 18px rgba(179, 66, 58, .25); }
+    .botao-perigo:hover { box-shadow: 0 10px 24px rgba(179, 66, 58, .32); }
+
     /* ---------- Impressão: cartão do QR Code ---------- */
     #impressao { display: none; }
     @media print {
@@ -248,6 +264,12 @@
           </div>
           <p class="msg-erro" id="capa-msg" style="margin-top:.6rem;text-align:center"></p>
         </section>
+
+        <section class="cartao bloco perigo-bloco">
+          <h3>Zona de perigo</h3>
+          <p class="desc">Depois do casamento, baixe tudo e libere o espaço apagando todas as fotos e vídeos de uma vez.</p>
+          <button class="botao-linha perigo" id="apagar-tudo" style="width:100%"><svg class="ic"><use href="#i-lixo"/></svg>Apagar todas as fotos</button>
+        </section>
       </aside>
     </div>
   </main>
@@ -265,6 +287,26 @@
     <button class="visor-btn visor-nav esq" id="visor-ant" title="Anterior"><svg class="ic"><use href="#i-esq"/></svg></button>
     <div id="visor-midia"></div>
     <button class="visor-btn visor-nav dir" id="visor-prox" title="Próxima"><svg class="ic"><use href="#i-dir"/></svg></button>
+  </div>
+</div>
+
+<!-- ================= Confirmar apagar tudo ================= -->
+<div class="modal-fundo" id="modal-apagar" hidden role="dialog" aria-modal="true" aria-labelledby="modal-titulo">
+  <div class="cartao modal surgir">
+    <div class="modal-icone"><svg class="ic"><use href="#i-lixo"/></svg></div>
+    <h2 id="modal-titulo">Apagar todas as fotos?</h2>
+    <p>Isso vai apagar <strong id="modal-qtd"></strong> permanentemente. <strong>Não dá para desfazer.</strong></p>
+    <div class="modal-dica">
+      <span>Já baixou tudo? Faça o download antes de apagar.</span>
+      <button class="botao-texto" id="modal-baixar" type="button">Baixar .zip agora</button>
+    </div>
+    <label for="modal-confirmar">Para confirmar, digite <strong>APAGAR</strong>:</label>
+    <input class="campo" id="modal-confirmar" autocomplete="off" spellcheck="false" placeholder="APAGAR">
+    <p class="msg-erro" id="modal-erro"></p>
+    <div class="modal-acoes">
+      <button class="botao-linha" id="modal-cancelar" type="button">Cancelar</button>
+      <button class="botao botao-perigo" id="modal-ok" type="button" disabled>Apagar tudo</button>
+    </div>
   </div>
 </div>
 
@@ -615,6 +657,49 @@ $('baixar-zip').addEventListener('click', async () => {
     zipando = false;
     $('baixar-zip').disabled = !visiveis.length;
     renderizar();
+  }
+});
+
+// ---------- Apagar tudo ----------
+function fecharModal() {
+  $('modal-apagar').hidden = true;
+  $('modal-confirmar').value = '';
+  $('modal-erro').textContent = '';
+}
+$('apagar-tudo').addEventListener('click', () => {
+  const n = dados.fotos.length;
+  // Mesmo com a galeria vazia, limpa arquivos que tenham sobrado no armazenamento
+  $('modal-qtd').textContent = n ? `${n} ${n === 1 ? 'arquivo' : 'arquivos'}` : 'todos os arquivos que restaram no armazenamento';
+  $('modal-ok').disabled = true;
+  $('modal-apagar').hidden = false;
+  setTimeout(() => $('modal-confirmar').focus(), 50);
+});
+$('modal-confirmar').addEventListener('input', (e) => {
+  $('modal-ok').disabled = e.target.value.trim().toUpperCase() !== 'APAGAR';
+});
+$('modal-cancelar').addEventListener('click', fecharModal);
+$('modal-apagar').addEventListener('click', (e) => { if (e.target === e.currentTarget) fecharModal(); });
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !$('modal-apagar').hidden) fecharModal(); });
+$('modal-baixar').addEventListener('click', () => { fecharModal(); $('filtro').value = ''; renderizar(); $('baixar-zip').click(); });
+$('modal-ok').addEventListener('click', async () => {
+  const botao = $('modal-ok');
+  botao.disabled = true;
+  botao.textContent = 'Apagando…';
+  $('modal-erro').textContent = '';
+  try {
+    const r = await api('/api/painel/apagar-tudo', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ confirmacao: 'APAGAR' }),
+    });
+    const j = await r.json().catch(() => ({}));
+    if (!r.ok) throw new Error(j.erro || 'Falha ao apagar');
+    fecharModal();
+    await carregar();
+  } catch (e) {
+    if (e.message !== '401') $('modal-erro').textContent = e.message;
+    botao.disabled = false;
+  } finally {
+    botao.textContent = 'Apagar tudo';
   }
 });
 
