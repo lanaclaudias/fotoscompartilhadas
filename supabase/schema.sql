@@ -20,6 +20,10 @@ create index if not exists fotos_enviada_idx on public.fotos (enviada_em desc);
 -- Só o servidor do site (com a service_role) lê e grava.
 alter table public.fotos enable row level security;
 
+-- Projetos novos do Supabase não liberam tabelas automaticamente: dá acesso só ao servidor (chave secreta)
+grant usage on schema public to service_role;
+grant select, insert, update, delete on table public.fotos to service_role;
+
 -- Bucket PRIVADO para as fotos (limite de 50 MB por arquivo, o máximo do plano grátis)
 insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
 values ('fotos', 'fotos', false, 52428800, array['image/*', 'video/*'])

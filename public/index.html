@@ -2,94 +2,274 @@
 <html lang="pt-BR">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Envie suas fotos 💍</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#ffffff">
+  <title>Compartilhe suas fotos</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/estilo.css">
   <style>
-    main { max-width: 480px; margin: 0 auto; padding: 2.5rem 1.25rem 4rem; }
-    header { text-align: center; margin-bottom: 2rem; }
-    header .enfeite { color: var(--destaque); letter-spacing: .3em; font-size: .8rem; text-transform: uppercase; }
-    header h1 { font-size: 2.4rem; font-weight: normal; margin: .4rem 0 .2rem; }
-    header .data { color: var(--suave); margin: 0; }
-    header .mensagem { margin: 1.25rem 0 0; }
+    body {
+      background:
+        radial-gradient(1200px 500px at 50% -200px, var(--ouro-fundo), transparent 70%),
+        #fff;
+      min-height: 100vh;
+    }
+    .pagina { max-width: 560px; margin: 0 auto; padding: max(2.75rem, env(safe-area-inset-top)) 1.25rem 3rem; }
 
-    .cartao h2 { font-size: 1.15rem; margin: 0 0 .25rem; }
-    .cartao p { margin: 0 0 1rem; }
-    form { display: grid; gap: .75rem; }
+    /* ---------- Capa ---------- */
+    .capa { text-align: center; margin-bottom: 2.25rem; }
+    .retrato {
+      width: 168px; height: 168px; margin: 0 auto 1.6rem;
+      padding: 5px; border-radius: 50%;
+      background: var(--gradiente-ouro);
+      box-shadow: 0 14px 40px rgba(143, 109, 56, .22);
+    }
+    .retrato img {
+      width: 100%; height: 100%; object-fit: cover; display: block;
+      border-radius: 50%; border: 4px solid #fff; background: #fff;
+    }
+    .aliancas-topo { width: 92px; height: 58px; margin: 0 auto 1.2rem; display: block; }
+    .capa .rotulo { margin: 0 0 .6rem; }
+    .nomes { font-size: clamp(2.6rem, 11vw, 3.6rem); line-height: 1.05; margin: 0; color: var(--texto); }
+    .nomes .e { font-style: italic; color: var(--ouro); padding: 0 .12em; font-weight: 400; }
+    .capa .divisor { margin: 1.2rem 0 .9rem; }
+    .data { margin: 0; color: var(--texto-2); letter-spacing: .22em; text-transform: uppercase; font-size: .76rem; font-weight: 500; }
+    .mensagem { margin: 1.4rem auto 0; max-width: 420px; color: var(--texto-2); font-family: var(--fonte-titulo); font-size: 1.22rem; font-style: italic; line-height: 1.45; }
 
-    .quem { display: flex; justify-content: space-between; align-items: center; font-size: .9rem; margin-bottom: 1rem; }
-    .quem button { background: none; border: 0; color: var(--destaque); cursor: pointer; text-decoration: underline; padding: 0; }
+    /* ---------- Cartão principal ---------- */
+    .painel { padding: 1.75rem; }
+    @media (max-width: 420px) { .painel { padding: 1.35rem; } }
+    .painel h2 { font-family: var(--fonte-titulo); font-weight: 500; font-size: 1.65rem; margin: 0 0 .25rem; text-align: center; }
+    .painel .sub { text-align: center; color: var(--texto-2); margin: 0 0 1.4rem; font-size: .92rem; }
+    .form-nome { display: grid; gap: .8rem; }
 
-    .escolher { width: 100%; padding: 1.25rem; font-size: 1.05rem; }
+    .quem {
+      display: flex; justify-content: space-between; align-items: center; gap: .75rem;
+      padding: .6rem .6rem .6rem 1rem; margin-bottom: 1.25rem;
+      background: var(--fundo-suave); border: 1px solid var(--linha); border-radius: 999px;
+      font-size: .88rem; color: var(--texto-2);
+    }
+    .quem strong { color: var(--texto); font-weight: 600; }
+    .quem .botao-texto { font-size: .82rem; padding: .25rem .6rem; }
+
+    /* Zona de seleção vazia */
+    .zona {
+      display: grid; justify-items: center; gap: .55rem; text-align: center;
+      padding: 2.4rem 1.25rem;
+      border: 1.5px dashed var(--ouro-claro); border-radius: 16px;
+      background: linear-gradient(180deg, #fff, var(--ouro-fundo));
+      cursor: pointer; transition: border-color .15s, background .15s;
+    }
+    .zona:hover, .zona.arrastando { border-color: var(--ouro); }
+    .zona .circulo {
+      width: 64px; height: 64px; border-radius: 50%; display: grid; place-items: center;
+      background: #fff; border: 1px solid var(--linha); box-shadow: var(--sombra-p); color: var(--ouro);
+      margin-bottom: .35rem;
+    }
+    .zona .circulo .ic { width: 28px; height: 28px; stroke-width: 1.4; }
+    .zona strong { font-size: 1.02rem; font-weight: 600; }
+    .zona span { color: var(--texto-2); font-size: .88rem; }
+    .zona .botao { margin-top: .75rem; }
     #entrada { display: none; }
 
-    .lista { list-style: none; padding: 0; margin: 1.25rem 0 0; display: grid; gap: .5rem; }
-    .lista li { display: grid; grid-template-columns: 44px 1fr auto; gap: .75rem; align-items: center; font-size: .85rem; }
-    .lista .mini { width: 44px; height: 44px; border-radius: 8px; object-fit: cover; background: #eee7dc; display: grid; place-items: center; font-size: 1.2rem; }
-    .lista .nome { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .barra { height: 4px; background: #efe9e0; border-radius: 2px; margin-top: 4px; overflow: hidden; }
-    .barra > div { height: 100%; width: 0; background: var(--destaque); transition: width .2s; }
-    .status.ok { color: var(--ok); }
-    .status.erro { color: var(--erro); }
+    /* Seleção */
+    .selecao-topo { display: flex; justify-content: space-between; align-items: center; gap: .75rem; margin-bottom: 1rem; }
+    .selecao-topo strong { font-size: 1rem; font-weight: 600; display: block; }
+    .selecao-topo .fraco { font-size: .82rem; }
 
-    .resumo { text-align: center; margin-top: 1.25rem; font-weight: 600; }
-    .resumo.ok { color: var(--ok); }
+    .miniaturas { display: grid; grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); gap: .55rem; }
+    .mini {
+      position: relative; aspect-ratio: 1; border-radius: 12px; overflow: hidden;
+      background: var(--fundo-suave); border: 1px solid var(--linha);
+      animation: surgir .3s ease both;
+    }
+    .mini > img, .mini > video { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .mini .icone-arquivo { position: absolute; inset: 0; display: grid; place-items: center; color: var(--texto-3); }
+    .mini .icone-arquivo .ic { width: 26px; height: 26px; }
+    .mini .selo-video {
+      position: absolute; left: 6px; bottom: 6px; width: 22px; height: 22px; border-radius: 50%;
+      background: rgba(0,0,0,.55); color: #fff; display: grid; place-items: center;
+    }
+    .mini .selo-video .ic { width: 11px; height: 11px; stroke: none; }
+    .mini .remover {
+      position: absolute; top: 6px; right: 6px; width: 26px; height: 26px; border-radius: 50%;
+      border: 0; background: rgba(255,255,255,.94); color: var(--texto); cursor: pointer;
+      display: grid; place-items: center; box-shadow: 0 2px 6px rgba(0,0,0,.15);
+    }
+    .mini .remover .ic { width: 14px; height: 14px; stroke-width: 2; }
+    .enviando-tudo .mini .remover { display: none; }
+
+    .mini .estado { position: absolute; inset: 0; display: none; place-items: center; }
+    .mini.enviando .estado, .mini.ok .estado, .mini.erro .estado { display: grid; }
+    .mini.enviando .estado { background: rgba(255,255,255,.55); }
+    .mini.ok .estado { background: rgba(255,255,255,.35); }
+    .mini.erro .estado { background: rgba(255,255,255,.7); }
+    .mini .estado .bolha {
+      width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center;
+      background: #fff; box-shadow: 0 2px 10px rgba(0,0,0,.15);
+    }
+    .mini.ok .bolha { background: var(--gradiente-ouro); color: #fff; }
+    .mini.erro .bolha { color: var(--erro); }
+    .mini .bolha .ic { width: 18px; height: 18px; stroke-width: 2.2; }
+    .mini .girando {
+      width: 22px; height: 22px; border-radius: 50%;
+      border: 2.5px solid var(--linha); border-top-color: var(--ouro);
+      animation: girar .8s linear infinite;
+    }
+    .mini .barra-mini { position: absolute; left: 0; right: 0; bottom: 0; height: 4px; background: rgba(255,255,255,.7); display: none; }
+    .mini.enviando .barra-mini { display: block; }
+    .mini .barra-mini > div { height: 100%; width: 0; background: var(--gradiente-ouro); transition: width .2s; }
+
+    .acoes { display: grid; gap: .7rem; margin-top: 1.4rem; }
+    .acoes .botao { width: 100%; min-height: 54px; font-size: 1rem; }
+    .acoes .linha-secundaria { display: flex; justify-content: center; }
+
+    .progresso { margin-top: 1.4rem; }
+    .progresso .trilho { height: 6px; background: var(--linha); border-radius: 999px; overflow: hidden; }
+    .progresso .trilho > div { height: 100%; width: 0; background: var(--gradiente-ouro); transition: width .25s; border-radius: 999px; }
+    .progresso p { display: flex; justify-content: space-between; margin: .55rem 0 0; font-size: .85rem; color: var(--texto-2); }
+
+    .aviso-erro {
+      display: flex; gap: .6rem; align-items: flex-start; margin-top: 1rem; padding: .8rem 1rem;
+      background: #fcf3f2; border: 1px solid #f1d6d3; border-radius: 12px; color: var(--erro); font-size: .88rem;
+    }
+
+    /* Concluído */
+    .concluido { text-align: center; padding: .75rem 0 .25rem; }
+    .concluido .selo {
+      width: 76px; height: 76px; border-radius: 50%; margin: 0 auto 1.1rem;
+      display: grid; place-items: center; background: var(--gradiente-ouro); color: #fff;
+      box-shadow: 0 12px 30px rgba(143, 109, 56, .3);
+    }
+    .concluido .selo .ic { width: 36px; height: 36px; stroke-width: 2; }
+    .concluido p { color: var(--texto-2); margin: 0 auto 1.5rem; max-width: 340px; }
+
+    .rodape { text-align: center; margin-top: 2rem; font-size: .8rem; color: var(--texto-3); display: flex; align-items: center; justify-content: center; gap: .4rem; }
+    .rodape .ic { width: 14px; height: 14px; }
   </style>
 </head>
 <body>
-<main>
-  <header>
-    <div class="enfeite">Nosso casamento</div>
-    <h1 class="serif" id="noivos">&nbsp;</h1>
+<!-- Ícones e alianças -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <linearGradient id="gradOuro" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#e2c98d"/><stop offset=".5" stop-color="#b08d57"/><stop offset="1" stop-color="#8a6a36"/>
+    </linearGradient>
+  </defs>
+  <symbol id="aliancas" viewBox="0 0 64 40">
+    <g fill="none" stroke="url(#gradOuro)" stroke-width="2.6">
+      <circle cx="25" cy="24" r="12.5"/><circle cx="39" cy="24" r="12.5"/>
+    </g>
+    <path d="M39 5.6l2.9 2.9-2.9 2.9-2.9-2.9z" fill="url(#gradOuro)"/>
+  </symbol>
+  <symbol id="i-camera" viewBox="0 0 24 24"><path d="M3 8.5A2.5 2.5 0 0 1 5.5 6h1.6l1.4-2h7l1.4 2h1.6A2.5 2.5 0 0 1 21 8.5v9a2.5 2.5 0 0 1-2.5 2.5h-13A2.5 2.5 0 0 1 3 17.5z"/><circle cx="12" cy="13" r="3.6"/></symbol>
+  <symbol id="i-enviar" viewBox="0 0 24 24"><path d="M12 16V4M7 9l5-5 5 5"/><path d="M4 16v2.5A1.5 1.5 0 0 0 5.5 20h13a1.5 1.5 0 0 0 1.5-1.5V16"/></symbol>
+  <symbol id="i-mais" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></symbol>
+  <symbol id="i-alerta" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7.5v5.5M12 16.5v.01"/></symbol>
+  <symbol id="i-imagem" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2.5"/><circle cx="9" cy="10" r="1.8"/><path d="M21 16l-5-5-9 9"/></symbol>
+  <symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5.5v13l10.5-6.5z" fill="currentColor"/></symbol>
+  <symbol id="i-cadeado" viewBox="0 0 24 24"><rect x="5" y="10.5" width="14" height="9.5" rx="2"/><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5"/></symbol>
+</svg>
+
+<main class="pagina">
+  <header class="capa surgir">
+    <div class="retrato" id="retrato" hidden><img id="foto-casal" alt="Foto do casal"></div>
+    <svg class="aliancas-topo" id="aliancas-topo" aria-hidden="true"><use href="#aliancas"/></svg>
+    <p class="rotulo">Nosso casamento</p>
+    <h1 class="nomes titulo" id="noivos">&nbsp;</h1>
+    <div class="divisor" aria-hidden="true"><svg><use href="#aliancas"/></svg></div>
     <p class="data" id="data"></p>
     <p class="mensagem" id="mensagem"></p>
   </header>
 
   <!-- Passo 1: nome -->
-  <section class="cartao oculto" id="passo-nome">
-    <h2>Como você se chama?</h2>
-    <p class="suave">Assim os noivos sabem quem enviou cada foto.</p>
-    <form id="form-nome">
-      <input class="campo" id="campo-nome" maxlength="60" placeholder="Ex.: Tia Marta" autocomplete="name" required>
+  <section class="cartao painel surgir" id="passo-nome" hidden>
+    <h2>Seja bem-vindo</h2>
+    <p class="sub">Como você se chama? Assim os noivos sabem quem registrou cada momento.</p>
+    <form class="form-nome" id="form-nome">
+      <input class="campo" id="campo-nome" maxlength="60" placeholder="Seu nome" autocomplete="name" required>
       <button class="botao" type="submit">Continuar</button>
     </form>
   </section>
 
-  <!-- Passo 2: envio -->
-  <section class="cartao oculto" id="passo-envio">
+  <!-- Passo 2: seleção e envio -->
+  <section class="cartao painel surgir" id="passo-envio" hidden>
     <div class="quem">
       <span>Enviando como <strong id="nome-atual"></strong></span>
-      <button type="button" id="trocar">trocar</button>
+      <button type="button" class="botao-texto" id="trocar">Trocar</button>
     </div>
-    <button class="botao escolher" id="escolher" type="button">📷 Escolher fotos e vídeos</button>
+
     <input type="file" id="entrada" accept="image/*,video/*" multiple>
-    <ul class="lista" id="lista"></ul>
-    <div class="resumo" id="resumo"></div>
+
+    <!-- Nada selecionado -->
+    <div class="zona" id="zona" role="button" tabindex="0">
+      <div class="circulo"><svg class="ic"><use href="#i-camera"/></svg></div>
+      <strong>Selecione suas fotos e vídeos</strong>
+      <span>Você pode escolher várias de uma vez</span>
+      <span class="botao" aria-hidden="true"><svg class="ic"><use href="#i-imagem"/></svg>Escolher da galeria</span>
+    </div>
+
+    <!-- Com arquivos selecionados -->
+    <div id="selecao" hidden>
+      <div class="selecao-topo">
+        <div>
+          <strong id="contagem"></strong>
+          <span class="fraco" id="tamanho"></span>
+        </div>
+        <button type="button" class="botao-linha" id="adicionar"><svg class="ic"><use href="#i-mais"/></svg>Adicionar</button>
+      </div>
+
+      <div class="miniaturas" id="miniaturas"></div>
+
+      <div class="progresso" id="progresso" hidden>
+        <div class="trilho"><div id="progresso-barra"></div></div>
+        <p><span id="progresso-texto">Enviando…</span><span id="progresso-pct">0%</span></p>
+      </div>
+
+      <div class="aviso-erro" id="aviso-erro" hidden>
+        <svg class="ic"><use href="#i-alerta"/></svg><span id="aviso-erro-texto"></span>
+      </div>
+
+      <div class="acoes">
+        <button type="button" class="botao" id="enviar"><svg class="ic"><use href="#i-enviar"/></svg><span id="enviar-texto">Enviar</span></button>
+        <div class="linha-secundaria"><button type="button" class="botao-texto" id="limpar">Limpar seleção</button></div>
+      </div>
+    </div>
+
+    <!-- Concluído -->
+    <div class="concluido surgir" id="concluido" hidden>
+      <div class="selo"><svg class="ic"><use href="#i-check"/></svg></div>
+      <h2>Obrigado!</h2>
+      <p id="concluido-texto"></p>
+      <button type="button" class="botao" id="mais-fotos"><svg class="ic"><use href="#i-mais"/></svg>Enviar mais fotos</button>
+    </div>
   </section>
+
+  <p class="rodape"><svg class="ic"><use href="#i-cadeado"/></svg>Suas fotos são enviadas apenas para os noivos.</p>
 </main>
 
 <script>
 (() => {
   const $ = (id) => document.getElementById(id);
-  let evento = { tamanhoMaximoMB: 300, comprimirFotos: true };
+  let evento = { tamanhoMaximoMB: 50, comprimirFotos: true };
 
-  // ---------- Identificação do convidado (nome + id salvo no celular) ----------
-  function obterId() {
-    let id = localStorage.getItem('convidadoId');
-    if (!id) {
-      id = (crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2));
-      localStorage.setItem('convidadoId', id);
-    }
-    return id;
+  // ---------- Identificação do convidado (nome + código salvo no celular) ----------
+  let convidadoId = localStorage.getItem('convidadoId');
+  if (!convidadoId) {
+    convidadoId = crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2);
+    localStorage.setItem('convidadoId', convidadoId);
   }
-  const convidadoId = obterId();
 
   function mostrarPasso() {
     const nome = localStorage.getItem('convidadoNome');
-    $('passo-nome').classList.toggle('oculto', !!nome);
-    $('passo-envio').classList.toggle('oculto', !nome);
+    $('passo-nome').hidden = !!nome;
+    $('passo-envio').hidden = !nome;
     if (nome) $('nome-atual').textContent = nome;
-    else $('campo-nome').focus();
+    else setTimeout(() => $('campo-nome').focus(), 50);
   }
 
   $('form-nome').addEventListener('submit', (e) => {
@@ -101,41 +281,151 @@
   });
 
   $('trocar').addEventListener('click', () => {
+    if (enviando) return;
     $('campo-nome').value = localStorage.getItem('convidadoNome') || '';
     localStorage.removeItem('convidadoNome');
     mostrarPasso();
   });
 
-  // ---------- Compressão de fotos no navegador (envio mais rápido no 4G) ----------
+  // ---------- Utilidades ----------
+  function formatarTamanho(b) {
+    if (b < 1024 * 1024) return Math.max(1, Math.round(b / 1024)) + ' KB';
+    if (b < 1024 * 1024 * 1024) return (b / 1024 / 1024).toFixed(1).replace('.', ',') + ' MB';
+    return (b / 1024 / 1024 / 1024).toFixed(2).replace('.', ',') + ' GB';
+  }
+  const icone = (nome) => `<svg class="ic"><use href="#i-${nome}"/></svg>`;
+
+  // Alguns celulares não informam o tipo (ex.: HEIC) → deduz pela extensão
+  const TIPOS = { heic: 'image/heic', heif: 'image/heif', jpg: 'image/jpeg', jpeg: 'image/jpeg', png: 'image/png',
+    webp: 'image/webp', gif: 'image/gif', mov: 'video/quicktime', mp4: 'video/mp4', m4v: 'video/x-m4v', '3gp': 'video/3gpp' };
+  function tipoDe(file) {
+    return file.type || TIPOS[(file.name.split('.').pop() || '').toLowerCase()] || '';
+  }
+  function comTipo(file) {
+    const t = tipoDe(file);
+    return file.type || !t ? file : new File([file], file.name, { type: t, lastModified: file.lastModified });
+  }
+
+  // Reduz fotos grandes antes de enviar (mais rápido no 4G)
   async function comprimir(file) {
     if (!evento.comprimirFotos) return file;
     if (!/^image\/(jpeg|png|webp)$/.test(file.type) || file.size < 1.5 * 1024 * 1024) return file;
     try {
       const bmp = await createImageBitmap(file, { imageOrientation: 'from-image' });
-      const max = 2560;
-      const escala = Math.min(1, max / Math.max(bmp.width, bmp.height));
+      const escala = Math.min(1, 2560 / Math.max(bmp.width, bmp.height));
       const canvas = document.createElement('canvas');
       canvas.width = Math.round(bmp.width * escala);
       canvas.height = Math.round(bmp.height * escala);
       canvas.getContext('2d').drawImage(bmp, 0, 0, canvas.width, canvas.height);
-      const blob = await new Promise((r) => canvas.toBlob(r, 'image/jpeg', 0.85));
+      const blob = await new Promise((r) => canvas.toBlob(r, 'image/jpeg', 0.86));
       if (!blob || blob.size >= file.size) return file;
-      const nome = file.name.replace(/\.[^.]+$/, '') + '.jpg';
-      return new File([blob], nome, { type: 'image/jpeg', lastModified: file.lastModified });
+      return new File([blob], file.name.replace(/\.[^.]+$/, '') + '.jpg', { type: 'image/jpeg', lastModified: file.lastModified });
     } catch {
-      return file; // formato que o navegador não consegue ler (ex.: HEIC) → envia original
+      return file; // formato que o navegador não lê (ex.: HEIC) → envia o original
     }
   }
 
-  // Alguns celulares não informam o tipo (ex.: HEIC) → deduz pela extensão
-  const TIPOS = { heic: 'image/heic', heif: 'image/heif', jpg: 'image/jpeg', jpeg: 'image/jpeg', png: 'image/png',
-    webp: 'image/webp', gif: 'image/gif', mov: 'video/quicktime', mp4: 'video/mp4', m4v: 'video/x-m4v', '3gp': 'video/3gpp' };
-  function comTipo(file) {
-    if (file.type) return file;
-    const ext = (file.name.split('.').pop() || '').toLowerCase();
-    return TIPOS[ext] ? new File([file], file.name, { type: TIPOS[ext], lastModified: file.lastModified }) : file;
+  // ---------- Seleção ----------
+  let itens = [];       // { id, file, url, el, estado: 'pendente'|'enviando'|'ok'|'erro', erro, enviado, total }
+  let enviando = false;
+  let seq = 0;
+
+  function criarMiniatura(item) {
+    const el = document.createElement('div');
+    el.className = 'mini';
+    const tipo = tipoDe(item.file);
+    if (tipo.startsWith('image/') && !/hei[cf]/.test(tipo)) {
+      const img = document.createElement('img');
+      img.src = item.url;
+      img.alt = '';
+      img.onerror = () => { img.remove(); el.insertAdjacentHTML('afterbegin', `<div class="icone-arquivo">${icone('imagem')}</div>`); };
+      el.appendChild(img);
+    } else if (tipo.startsWith('video/')) {
+      const v = document.createElement('video');
+      v.src = item.url + '#t=0.1';
+      v.muted = true; v.playsInline = true; v.preload = 'metadata';
+      el.appendChild(v);
+      el.insertAdjacentHTML('beforeend', `<span class="selo-video">${icone('play')}</span>`);
+    } else {
+      el.insertAdjacentHTML('afterbegin', `<div class="icone-arquivo">${icone('imagem')}</div>`);
+    }
+    el.insertAdjacentHTML('beforeend',
+      `<button type="button" class="remover" aria-label="Remover">${icone('x')}</button>` +
+      `<div class="estado"><div class="bolha"></div></div>` +
+      `<div class="barra-mini"><div></div></div>`);
+    el.querySelector('.remover').addEventListener('click', () => remover(item.id));
+    return el;
   }
 
+  function definirEstado(item, estado, erro) {
+    item.estado = estado;
+    item.erro = erro || '';
+    item.el.classList.remove('enviando', 'ok', 'erro');
+    if (estado !== 'pendente') item.el.classList.add(estado);
+    const bolha = item.el.querySelector('.bolha');
+    bolha.innerHTML = estado === 'enviando' ? '<div class="girando"></div>'
+      : estado === 'ok' ? icone('check')
+      : estado === 'erro' ? icone('alerta') : '';
+    item.el.title = erro || '';
+  }
+
+  function adicionar(arquivos) {
+    const jaTem = new Set(itens.map((i) => `${i.file.name}|${i.file.size}|${i.file.lastModified}`));
+    for (const file of arquivos) {
+      const chave = `${file.name}|${file.size}|${file.lastModified}`;
+      if (jaTem.has(chave)) continue;
+      const t = tipoDe(file);
+      if (t && !/^(image|video)\//.test(t)) continue;
+      jaTem.add(chave);
+      const item = { id: ++seq, file, url: URL.createObjectURL(file), estado: 'pendente', enviado: 0, total: file.size };
+      item.el = criarMiniatura(item);
+      $('miniaturas').appendChild(item.el);
+      itens.push(item);
+    }
+    $('concluido').hidden = true;
+    atualizar();
+  }
+
+  function remover(id) {
+    const i = itens.findIndex((x) => x.id === id);
+    if (i < 0 || enviando) return;
+    URL.revokeObjectURL(itens[i].url);
+    itens[i].el.remove();
+    itens.splice(i, 1);
+    atualizar();
+  }
+
+  function limpar() {
+    itens.forEach((i) => URL.revokeObjectURL(i.url));
+    itens = [];
+    $('miniaturas').innerHTML = '';
+    $('aviso-erro').hidden = true;
+    $('progresso').hidden = true;
+    atualizar();
+  }
+
+  function atualizar() {
+    const pendentes = itens.filter((i) => i.estado !== 'ok');
+    const temItens = itens.length > 0;
+    $('zona').hidden = temItens || !$('concluido').hidden;
+    $('selecao').hidden = !temItens;
+
+    const n = itens.length;
+    $('contagem').textContent = `${n} ${n === 1 ? 'selecionado' : 'selecionados'}`;
+    $('tamanho').textContent = formatarTamanho(itens.reduce((s, i) => s + i.file.size, 0));
+
+    const comErro = itens.filter((i) => i.estado === 'erro').length;
+    const p = pendentes.length;
+    $('enviar-texto').textContent = enviando ? 'Enviando…'
+      : comErro ? `Tentar de novo (${comErro})`
+      : `Enviar ${p} ${p === 1 ? 'arquivo' : 'arquivos'}`;
+    $('enviar').disabled = enviando || p === 0;
+    $('adicionar').disabled = enviando;
+    $('limpar').hidden = enviando;
+    $('passo-envio').classList.toggle('enviando-tudo', enviando);
+  }
+
+  // ---------- Envio ----------
   async function postJSON(url, corpo) {
     let r;
     try {
@@ -146,7 +436,6 @@
     return j;
   }
 
-  // Envia o arquivo direto para o Supabase Storage (URL assinada), com barra de progresso
   function enviarArquivo(urlEnvio, file, aoProgresso) {
     return new Promise((resolve, reject) => {
       const fd = new FormData();
@@ -154,10 +443,10 @@
       fd.append('', file, file.name);
       const xhr = new XMLHttpRequest();
       xhr.open('PUT', urlEnvio);
-      xhr.upload.onprogress = (e) => e.lengthComputable && aoProgresso(e.loaded / e.total);
+      xhr.upload.onprogress = (e) => e.lengthComputable && aoProgresso(e.loaded);
       xhr.onload = () => {
         if (xhr.status >= 200 && xhr.status < 300) return resolve();
-        if (xhr.status === 413) return reject(new Error(`Arquivo maior que ${evento.tamanhoMaximoMB} MB`));
+        if (xhr.status === 413) return reject(new Error(`Maior que ${evento.tamanhoMaximoMB} MB`));
         reject(new Error('Falha no envio'));
       };
       xhr.onerror = () => reject(new Error('Sem conexão'));
@@ -165,120 +454,140 @@
     });
   }
 
-  // ---------- Envio ----------
-  async function enviar(file, original, aoProgresso) {
-    const nome = localStorage.getItem('convidadoNome') || 'Anônimo';
-    const ini = await postJSON('/api/upload/iniciar', { tipo: file.type, tamanho: file.size, nomeArquivo: file.name });
-    await enviarArquivo(ini.urlEnvio, file, aoProgresso);
-    await postJSON('/api/upload/confirmar', {
-      caminho: ini.caminho,
-      tipo: file.type,
-      tamanho: file.size,
-      nomeOriginal: original.name,
-      nome,
-      convidadoId,
-      tiradaEm: original.lastModified || null,
+  async function enviarItem(item) {
+    definirEstado(item, 'enviando');
+    item.enviado = 0;
+    const pronto = comTipo(await comprimir(item.file));
+    item.total = pronto.size;
+    if (pronto.size > evento.tamanhoMaximoMB * 1024 * 1024) {
+      throw new Error(`Maior que ${evento.tamanhoMaximoMB} MB`);
+    }
+    const barra = item.el.querySelector('.barra-mini > div');
+    for (let tentativa = 1; ; tentativa++) {
+      try {
+        const ini = await postJSON('/api/upload/iniciar', { tipo: pronto.type, tamanho: pronto.size, nomeArquivo: pronto.name });
+        await enviarArquivo(ini.urlEnvio, pronto, (enviado) => {
+          item.enviado = enviado;
+          barra.style.width = Math.round((enviado / pronto.size) * 100) + '%';
+          atualizarProgresso();
+        });
+        await postJSON('/api/upload/confirmar', {
+          caminho: ini.caminho, tipo: pronto.type, tamanho: pronto.size,
+          nomeOriginal: item.file.name, nome: localStorage.getItem('convidadoNome') || 'Anônimo',
+          convidadoId, tiradaEm: item.file.lastModified || null,
+        });
+        item.enviado = item.total;
+        return;
+      } catch (e) {
+        if (tentativa < 3 && e.message === 'Sem conexão') {
+          await new Promise((r) => setTimeout(r, 1500 * tentativa));
+          continue;
+        }
+        throw e;
+      }
+    }
+  }
+
+  let lote = [];
+  function atualizarProgresso() {
+    const total = lote.reduce((s, i) => s + i.total, 0) || 1;
+    const feito = lote.reduce((s, i) => s + (i.estado === 'ok' ? i.total : i.enviado), 0);
+    const pct = Math.min(100, Math.round((feito / total) * 100));
+    const prontos = lote.filter((i) => i.estado === 'ok' || i.estado === 'erro').length;
+    $('progresso-barra').style.width = pct + '%';
+    $('progresso-pct').textContent = pct + '%';
+    $('progresso-texto').textContent = `Enviando ${Math.min(prontos + 1, lote.length)} de ${lote.length}…`;
+  }
+
+  async function enviarTodos() {
+    if (enviando) return;
+    lote = itens.filter((i) => i.estado === 'pendente' || i.estado === 'erro');
+    if (!lote.length) return;
+    enviando = true;
+    lote.forEach((i) => definirEstado(i, 'pendente'));
+    $('aviso-erro').hidden = true;
+    $('progresso').hidden = false;
+    atualizar();
+    atualizarProgresso();
+
+    const fila = [...lote];
+    async function trabalhador() {
+      while (fila.length) {
+        const item = fila.shift();
+        try {
+          await enviarItem(item);
+          definirEstado(item, 'ok');
+        } catch (e) {
+          definirEstado(item, 'erro', e.message);
+        }
+        atualizarProgresso();
+      }
+    }
+    await Promise.all([trabalhador(), trabalhador(), trabalhador()]);
+
+    enviando = false;
+    const erros = lote.filter((i) => i.estado === 'erro');
+    const ok = lote.length - erros.length;
+    $('progresso').hidden = true;
+
+    if (!erros.length) {
+      const total = itens.length;
+      limpar();
+      $('concluido-texto').textContent = `Recebemos ${total} ${total === 1 ? 'arquivo' : 'arquivos'}. Os noivos vão adorar reviver esses momentos pelo seu olhar.`;
+      $('concluido').hidden = false;
+      $('zona').hidden = true;
+    } else {
+      const motivo = erros[0].erro || 'falha no envio';
+      $('aviso-erro-texto').textContent = `${ok} enviados. ${erros.length} não foram enviados (${motivo}). Toque em "Tentar de novo".`;
+      $('aviso-erro').hidden = false;
+    }
+    atualizar();
+  }
+
+  // ---------- Eventos ----------
+  const abrirSeletor = () => !enviando && $('entrada').click();
+  $('zona').addEventListener('click', abrirSeletor);
+  $('zona').addEventListener('keydown', (e) => (e.key === 'Enter' || e.key === ' ') && (e.preventDefault(), abrirSeletor()));
+  $('adicionar').addEventListener('click', abrirSeletor);
+  $('entrada').addEventListener('change', (e) => { adicionar([...e.target.files]); e.target.value = ''; });
+  $('enviar').addEventListener('click', enviarTodos);
+  $('limpar').addEventListener('click', () => !enviando && limpar());
+  $('mais-fotos').addEventListener('click', () => { $('concluido').hidden = true; atualizar(); abrirSeletor(); });
+
+  // Arrastar e soltar (computador)
+  ['dragenter', 'dragover'].forEach((t) => $('zona').addEventListener(t, (e) => { e.preventDefault(); $('zona').classList.add('arrastando'); }));
+  ['dragleave', 'drop'].forEach((t) => $('zona').addEventListener(t, () => $('zona').classList.remove('arrastando')));
+  $('zona').addEventListener('drop', (e) => { e.preventDefault(); adicionar([...e.dataTransfer.files]); });
+
+  window.addEventListener('beforeunload', (e) => {
+    if (enviando || itens.some((i) => i.estado === 'pendente')) { e.preventDefault(); e.returnValue = ''; }
+  });
+
+  // ---------- Dados do evento ----------
+  function mostrarNomes(texto) {
+    const h = $('noivos');
+    h.textContent = '';
+    const partes = String(texto || '').split(/\s*&\s*/);
+    partes.forEach((p, i) => {
+      if (i > 0) { const e = document.createElement('span'); e.className = 'e'; e.textContent = '&'; h.append(' ', e, ' '); }
+      h.append(p);
     });
   }
 
-  function criarItem(file) {
-    const li = document.createElement('li');
-    let mini;
-    if (file.type.startsWith('image/')) {
-      mini = document.createElement('img');
-      mini.src = URL.createObjectURL(file);
-    } else {
-      mini = document.createElement('div');
-      mini.textContent = '🎬';
-    }
-    mini.className = 'mini';
-    const meio = document.createElement('div');
-    const nome = document.createElement('div');
-    nome.className = 'nome';
-    nome.textContent = file.name;
-    const barra = document.createElement('div');
-    barra.className = 'barra';
-    const preench = document.createElement('div');
-    barra.appendChild(preench);
-    meio.append(nome, barra);
-    const status = document.createElement('span');
-    status.className = 'status suave';
-    status.textContent = 'na fila';
-    li.append(mini, meio, status);
-    $('lista').appendChild(li);
-    return {
-      progresso: (p) => { preench.style.width = Math.round(p * 100) + '%'; },
-      status: (txt, cls) => { status.textContent = txt; status.className = 'status ' + (cls || 'suave'); },
-    };
-  }
-
-  let enviando = false;
-  const fila = [];
-  let okCount = 0, erroCount = 0;
-
-  async function processarFila() {
-    if (enviando) return;
-    enviando = true;
-    $('resumo').textContent = '';
-    $('resumo').className = 'resumo';
-    while (fila.length) {
-      const { file, item } = fila.shift();
-      item.status('preparando…');
-      const pronto = comTipo(await comprimir(file));
-      if (pronto.size > evento.tamanhoMaximoMB * 1024 * 1024) {
-        item.status(`maior que ${evento.tamanhoMaximoMB} MB`, 'erro'); erroCount++; continue;
-      }
-      let tentativa = 0;
-      while (true) {
-        try {
-          item.status('enviando…');
-          await enviar(pronto, file, item.progresso);
-          item.progresso(1); item.status('✓ enviada', 'ok'); okCount++;
-          break;
-        } catch (err) {
-          if (++tentativa < 3 && err.message === 'Sem conexão') {
-            item.status('tentando de novo…');
-            await new Promise((r) => setTimeout(r, 2000 * tentativa));
-            continue;
-          }
-          item.status(err.message, 'erro'); erroCount++;
-          break;
-        }
-      }
-    }
-    enviando = false;
-    const r = $('resumo');
-    if (erroCount === 0) {
-      r.textContent = `Obrigado! ${okCount} ${okCount === 1 ? 'arquivo enviado' : 'arquivos enviados'} ❤️`;
-      r.className = 'resumo ok';
-    } else {
-      r.textContent = `${okCount} enviados, ${erroCount} com erro. Tente enviar os que falharam de novo.`;
-    }
-  }
-
-  $('escolher').addEventListener('click', () => $('entrada').click());
-  $('entrada').addEventListener('change', (e) => {
-    const arquivos = [...e.target.files];
-    e.target.value = '';
-    if (!arquivos.length) return;
-    for (const file of arquivos) fila.push({ file, item: criarItem(file) });
-    processarFila();
-  });
-
-  window.addEventListener('beforeunload', (e) => {
-    if (enviando) { e.preventDefault(); e.returnValue = ''; }
-  });
-
-  // ---------- Carrega dados do evento ----------
   fetch('/api/evento').then((r) => r.json()).then((ev) => {
     evento = ev;
-    $('noivos').textContent = ev.noivos;
-    $('data').textContent = ev.data;
-    $('mensagem').textContent = ev.mensagem;
-    document.title = `Fotos • ${ev.noivos}`;
+    mostrarNomes(ev.noivos);
+    $('data').textContent = ev.data || '';
+    $('mensagem').textContent = ev.mensagem || '';
+    document.title = `${ev.noivos} • Compartilhe suas fotos`;
+    if (ev.capaUrl) {
+      $('foto-casal').src = ev.capaUrl;
+      $('foto-casal').onload = () => { $('retrato').hidden = false; $('aliancas-topo').setAttribute('hidden', ''); };
+    }
   }).catch(() => {});
 
   mostrarPasso();
+  atualizar();
 })();
 </script>
 </body>

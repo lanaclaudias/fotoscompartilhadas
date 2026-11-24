@@ -5,349 +5,627 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex">
   <title>Painel dos noivos</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/estilo.css">
   <style>
-    main { max-width: 1100px; margin: 0 auto; padding: 2rem 1.25rem 4rem; }
-    h1 { font-weight: normal; font-size: 1.9rem; margin: 0; }
+    body { background: var(--fundo-suave); }
 
-    #tela-login { max-width: 360px; margin: 12vh auto 0; text-align: center; }
-    #tela-login form { display: grid; gap: .75rem; margin-top: 1rem; }
-    .msg-erro { color: var(--erro); font-size: .9rem; min-height: 1.3em; margin: 0; }
+    /* ---------- Login ---------- */
+    .login { min-height: 100vh; display: grid; place-items: center; padding: 1.5rem;
+      background: radial-gradient(900px 420px at 50% -120px, var(--ouro-fundo), transparent 70%), #fff; }
+    .login .cartao { width: 100%; max-width: 400px; padding: 2.5rem 2rem; text-align: center; }
+    .login .aliancas { width: 78px; height: 50px; margin: 0 auto .9rem; display: block; }
+    .login h1 { font-size: 2.1rem; margin: .3rem 0 .3rem; }
+    .login p { color: var(--texto-2); margin: 0 0 1.6rem; font-size: .92rem; }
+    .login form { display: grid; gap: .8rem; }
+    .msg-erro { color: var(--erro); font-size: .86rem; min-height: 1.3em; margin: 0; }
 
-    .topo { display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap; margin-bottom: 1.5rem; }
+    /* ---------- Estrutura ---------- */
+    .topo {
+      position: sticky; top: 0; z-index: 20;
+      background: rgba(255,255,255,.92); backdrop-filter: saturate(1.4) blur(12px);
+      border-bottom: 1px solid var(--linha);
+    }
+    .topo-in { max-width: 1280px; margin: 0 auto; padding: .85rem 1.5rem; display: flex; align-items: center; gap: 1rem; }
+    .marca { display: flex; align-items: center; gap: .85rem; min-width: 0; }
+    .marca svg { width: 42px; height: 27px; flex: none; }
+    .marca .nome { font-family: var(--fonte-titulo); font-size: 1.45rem; font-weight: 500; line-height: 1.1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .marca .nome .e { color: var(--ouro); font-style: italic; }
+    .marca .rotulo { font-size: .62rem; display: block; margin-top: 2px; }
+    .topo .espaco { flex: 1; }
+    .topo .botao-linha { min-height: 38px; padding: .45rem .95rem; font-size: .84rem; }
+    @media (max-width: 640px) { .topo .so-desktop { display: none; } }
 
-    .numeros { display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 1.5rem; }
-    .numeros .cartao { padding: 1rem 1.25rem; min-width: 150px; }
-    .numeros strong { display: block; font-size: 1.8rem; font-weight: 600; }
-    .numeros span { color: var(--suave); font-size: .85rem; }
+    .conteudo { max-width: 1280px; margin: 0 auto; padding: 1.75rem 1.5rem 4rem; }
 
-    .grade-topo { display: grid; grid-template-columns: 1fr 300px; gap: 1.5rem; align-items: start; }
-    @media (max-width: 800px) { .grade-topo { grid-template-columns: 1fr; } }
+    /* ---------- Números ---------- */
+    .numeros { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 1.75rem; }
+    @media (max-width: 860px) { .numeros { grid-template-columns: repeat(2, 1fr); } }
+    .numero { padding: 1.15rem 1.25rem; display: flex; align-items: center; gap: 1rem; box-shadow: var(--sombra-p); }
+    .numero .ic-caixa { width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center; background: var(--ouro-fundo); color: var(--ouro-escuro); flex: none; }
+    .numero .ic-caixa .ic { width: 21px; height: 21px; }
+    .numero strong { display: block; font-size: 1.55rem; font-weight: 600; line-height: 1.1; letter-spacing: -.01em; font-variant-numeric: tabular-nums; }
+    .numero span { color: var(--texto-3); font-size: .8rem; }
 
-    .qr { text-align: center; }
-    .qr img { width: 100%; max-width: 240px; display: block; margin: .5rem auto; border-radius: 8px; }
-    .qr .url { font-size: .8rem; word-break: break-all; color: var(--suave); margin: 0 0 1rem; }
-    .qr .acoes { display: grid; gap: .5rem; }
-    .aviso-local { font-size: .78rem; background: #fff6e0; border: 1px solid #f0dfb0; border-radius: 8px; padding: .5rem .7rem; margin-top: .75rem; text-align: left; }
+    .grade { display: grid; grid-template-columns: minmax(0, 1fr) 330px; gap: 1.5rem; align-items: start; }
+    @media (max-width: 1000px) { .grade { grid-template-columns: 1fr; } .lateral { order: -1; display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; } }
+    @media (max-width: 640px) { .lateral { grid-template-columns: 1fr; } }
 
-    .filtros { display: flex; gap: .75rem; flex-wrap: wrap; align-items: center; margin-bottom: 1rem; }
-    .filtros select { width: auto; min-width: 220px; }
+    /* ---------- Galeria ---------- */
+    .bloco { padding: 1.35rem; box-shadow: var(--sombra-p); }
+    .bloco-cab { display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; margin-bottom: 1.1rem; }
+    .bloco-cab h2 { margin: 0; font-family: var(--fonte-titulo); font-weight: 500; font-size: 1.5rem; }
+    .ferramentas { display: flex; gap: .6rem; flex-wrap: wrap; align-items: center; }
+    .ferramentas select.campo { width: auto; min-width: 230px; min-height: 42px; padding: .5rem 2.2rem .5rem .95rem; font-size: .88rem; border-radius: 999px;
+      appearance: none; background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238a6a36' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") no-repeat right .9rem center; }
+    .ferramentas .botao { min-height: 42px; padding: .55rem 1.15rem; font-size: .86rem; }
+    .zip-status { font-size: .84rem; color: var(--texto-2); margin: -.35rem 0 1rem; }
 
-    .galeria { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: .75rem; }
-    .foto { background: #fff; border: 1px solid var(--borda); border-radius: 10px; overflow: hidden; display: flex; flex-direction: column; }
-    .foto a.midia { display: block; aspect-ratio: 1; background: #eee7dc; }
-    .foto img, .foto video { width: 100%; height: 100%; object-fit: cover; display: block; }
-    .foto .info { padding: .5rem .6rem; font-size: .78rem; display: flex; justify-content: space-between; align-items: center; gap: .4rem; }
-    .foto .info div { overflow: hidden; }
-    .foto .info strong { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .foto .info button { border: 0; background: none; cursor: pointer; font-size: 1rem; padding: .2rem; opacity: .55; }
-    .foto .info button:hover { opacity: 1; }
-    .vazio { text-align: center; padding: 3rem 1rem; color: var(--suave); }
+    .galeria { display: grid; grid-template-columns: repeat(auto-fill, minmax(168px, 1fr)); gap: .7rem; }
+    .item { position: relative; aspect-ratio: 1; border-radius: 12px; overflow: hidden; background: #f1ede6; cursor: zoom-in; border: 0; padding: 0; }
+    .item img, .item video { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .35s ease; }
+    .item:hover img, .item:hover video { transform: scale(1.04); }
+    .item .sobre {
+      position: absolute; inset: auto 0 0 0; padding: 1.6rem .7rem .6rem; text-align: left;
+      background: linear-gradient(180deg, transparent, rgba(0,0,0,.62)); color: #fff;
+      font-size: .76rem; line-height: 1.3; opacity: 0; transition: opacity .2s;
+    }
+    .item:hover .sobre, .item:focus-visible .sobre { opacity: 1; }
+    @media (hover: none) { .item .sobre { opacity: 1; } }
+    .item .sobre strong { display: block; font-weight: 600; font-size: .82rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .item .selo-video { position: absolute; top: 8px; left: 8px; width: 26px; height: 26px; border-radius: 50%; background: rgba(0,0,0,.55); color: #fff; display: grid; place-items: center; }
+    .item .selo-video .ic { width: 12px; height: 12px; stroke: none; }
+    .item:focus-visible { outline: 2px solid var(--ouro); outline-offset: 2px; }
 
-    /* Impressão: só o cartão do QR Code */
+    .vazio { grid-column: 1 / -1; text-align: center; padding: 4rem 1rem; color: var(--texto-2); }
+    .vazio svg { width: 70px; height: 45px; display: block; margin: 0 auto 1rem; }
+    .vazio strong { display: block; color: var(--texto); font-family: var(--fonte-titulo); font-size: 1.4rem; font-weight: 500; margin-bottom: .25rem; }
+
+    /* ---------- Lateral ---------- */
+    .lateral { display: grid; gap: 1.25rem; }
+    .lateral .bloco h3 { margin: 0 0 .2rem; font-size: .98rem; font-weight: 600; }
+    .lateral .bloco .desc { margin: 0 0 1rem; font-size: .84rem; color: var(--texto-2); }
+    .qr-moldura { border: 1px solid var(--linha); border-radius: 14px; padding: .8rem; background: #fff; }
+    .qr-moldura img { width: 100%; display: block; aspect-ratio: 1; }
+    .url-site { display: flex; align-items: center; gap: .5rem; margin: .8rem 0 1rem; padding: .55rem .8rem; background: var(--fundo-suave); border: 1px solid var(--linha); border-radius: 10px; font-size: .8rem; color: var(--texto-2); }
+    .url-site span { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .url-site button { border: 0; background: none; color: var(--ouro-escuro); cursor: pointer; padding: .15rem; display: grid; }
+    .acoes-col { display: grid; gap: .55rem; }
+    .acoes-col .botao, .acoes-col .botao-linha { width: 100%; }
+    .aviso-local { font-size: .78rem; background: var(--ouro-fundo); border: 1px solid #eadcbf; border-radius: 10px; padding: .6rem .75rem; margin-top: .9rem; color: var(--ouro-escuro); }
+
+    .capa-previa { width: 132px; height: 132px; margin: .2rem auto 1.1rem; padding: 4px; border-radius: 50%; background: var(--gradiente-ouro); }
+    .capa-previa > div { width: 100%; height: 100%; border-radius: 50%; border: 3px solid #fff; background: var(--fundo-suave); overflow: hidden; display: grid; place-items: center; }
+    .capa-previa img { width: 100%; height: 100%; object-fit: cover; }
+    .capa-previa svg { width: 54px; height: 34px; }
+    #entrada-capa { display: none; }
+
+    /* ---------- Visualizador ---------- */
+    .visor { position: fixed; inset: 0; z-index: 50; background: rgba(14, 12, 9, .97); display: grid; grid-template-rows: auto 1fr; animation: surgir .2s ease; }
+    .visor-topo { display: flex; align-items: center; gap: .75rem; padding: .9rem 1.25rem; color: #fff; }
+    .visor-topo .info { flex: 1; min-width: 0; }
+    .visor-topo .info strong { display: block; font-weight: 600; }
+    .visor-topo .info span { font-size: .82rem; color: rgba(255,255,255,.6); }
+    .visor-btn { width: 42px; height: 42px; border-radius: 50%; border: 1px solid rgba(255,255,255,.18); background: rgba(255,255,255,.06); color: #fff; display: grid; place-items: center; cursor: pointer; text-decoration: none; transition: background .15s; }
+    .visor-btn:hover { background: rgba(255,255,255,.16); }
+    .visor-btn.perigo:hover { background: var(--erro); border-color: var(--erro); }
+    .visor-palco { position: relative; display: grid; place-items: center; padding: 0 4.5rem 1.5rem; min-height: 0; }
+    .visor-palco img, .visor-palco video { max-width: 100%; max-height: calc(100vh - 100px); object-fit: contain; border-radius: 6px; }
+    .visor-nav { position: absolute; top: 50%; transform: translateY(-50%); }
+    .visor-nav.esq { left: 1rem; } .visor-nav.dir { right: 1rem; }
+    @media (max-width: 640px) { .visor-palco { padding: 0 .5rem 1rem; } .visor-nav { top: auto; bottom: 1.25rem; transform: none; } }
+
+    /* ---------- Impressão: cartão do QR Code ---------- */
     #impressao { display: none; }
     @media print {
+      @page { margin: 0; }
       body { background: #fff; }
-      main { display: none; }
-      #impressao { display: block; text-align: center; padding-top: 8vh; }
-      #impressao h2 { font-family: Georgia, serif; font-weight: normal; font-size: 2.4rem; margin: 0 0 .25rem; }
-      #impressao p { font-size: 1.2rem; margin: .25rem 0; }
-      #impressao img { width: 9cm; height: 9cm; margin: 1.5rem auto; display: block; }
+      body > *:not(#impressao):not(.sprite) { display: none !important; }
+      #impressao { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; text-align: center; padding: 2cm; }
+      #impressao .moldura { border: 1.5px solid #b08d57; outline: 1px solid #b08d57; outline-offset: 6px; padding: 1.6cm 1.4cm; width: 13cm; }
+      #impressao .retrato { width: 3.6cm; height: 3.6cm; border-radius: 50%; object-fit: cover; border: 3px solid #b08d57; margin-bottom: .5cm; }
+      #impressao .aliancas { width: 2.2cm; height: 1.4cm; }
+      #impressao h2 { font-family: var(--fonte-titulo); font-weight: 500; font-size: 32pt; margin: .2cm 0; }
+      #impressao h2 .e { color: #b08d57; font-style: italic; }
+      #impressao .convite { font-family: var(--fonte-titulo); font-style: italic; font-size: 15pt; margin: .3cm 0 .5cm; color: #444; }
+      #impressao .qr { width: 6.2cm; height: 6.2cm; }
+      #impressao .instr { font-size: 9pt; letter-spacing: .22em; text-transform: uppercase; color: #8a6a36; margin: .4cm 0 .15cm; font-weight: 600; }
+      #impressao .url { font-size: 9pt; color: #777; margin: 0; }
     }
   </style>
 </head>
 <body>
-<main>
-  <!-- Login -->
-  <section id="tela-login" class="cartao oculto">
-    <h1 class="serif">Painel dos noivos</h1>
+<svg class="sprite" width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <linearGradient id="gradOuro" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#e2c98d"/><stop offset=".5" stop-color="#b08d57"/><stop offset="1" stop-color="#8a6a36"/>
+    </linearGradient>
+  </defs>
+  <symbol id="aliancas" viewBox="0 0 64 40">
+    <g fill="none" stroke="url(#gradOuro)" stroke-width="2.6"><circle cx="25" cy="24" r="12.5"/><circle cx="39" cy="24" r="12.5"/></g>
+    <path d="M39 5.6l2.9 2.9-2.9 2.9-2.9-2.9z" fill="url(#gradOuro)"/>
+  </symbol>
+  <symbol id="i-baixar" viewBox="0 0 24 24"><path d="M12 4v12M7 11l5 5 5-5"/><path d="M4 16v2.5A1.5 1.5 0 0 0 5.5 20h13a1.5 1.5 0 0 0 1.5-1.5V16"/></symbol>
+  <symbol id="i-enviar" viewBox="0 0 24 24"><path d="M12 16V4M7 9l5-5 5 5"/><path d="M4 16v2.5A1.5 1.5 0 0 0 5.5 20h13a1.5 1.5 0 0 0 1.5-1.5V16"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+  <symbol id="i-lixo" viewBox="0 0 24 24"><path d="M4 7h16M9.5 7V4.5h5V7M6.5 7l.8 12a1.5 1.5 0 0 0 1.5 1.4h6.4a1.5 1.5 0 0 0 1.5-1.4l.8-12"/></symbol>
+  <symbol id="i-atualizar" viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-2.34-5.66M20 4v4h-4"/></symbol>
+  <symbol id="i-imprimir" viewBox="0 0 24 24"><path d="M7 9V4h10v5"/><rect x="3" y="9" width="18" height="8" rx="2"/><path d="M7 14h10v6H7z"/></symbol>
+  <symbol id="i-copiar" viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5.5A1.5 1.5 0 0 0 14.5 4h-9A1.5 1.5 0 0 0 4 5.5v9A1.5 1.5 0 0 0 5.5 16H8"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></symbol>
+  <symbol id="i-sair" viewBox="0 0 24 24"><path d="M15 4h3.5A1.5 1.5 0 0 1 20 5.5v13a1.5 1.5 0 0 1-1.5 1.5H15M10 8l-4 4 4 4M6 12h10"/></symbol>
+  <symbol id="i-externo" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v4.5a1.5 1.5 0 0 1-1.5 1.5h-11A1.5 1.5 0 0 1 4 18.5v-11A1.5 1.5 0 0 1 5.5 6H10"/></symbol>
+  <symbol id="i-imagem" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2.5"/><circle cx="9" cy="10" r="1.8"/><path d="M21 16l-5-5-9 9"/></symbol>
+  <symbol id="i-video" viewBox="0 0 24 24"><rect x="3" y="6" width="13" height="12" rx="2.5"/><path d="M16 10.5l5-3v9l-5-3"/></symbol>
+  <symbol id="i-pessoas" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 19a5.5 5.5 0 0 1 11 0"/><path d="M16 5.2a3 3 0 0 1 0 5.6M17.5 14.2A5.5 5.5 0 0 1 20.5 19"/></symbol>
+  <symbol id="i-disco" viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="2.8"/><path d="M4 6v12c0 1.5 3.6 2.8 8 2.8s8-1.3 8-2.8V6"/><path d="M4 12c0 1.5 3.6 2.8 8 2.8s8-1.3 8-2.8"/></symbol>
+  <symbol id="i-esq" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></symbol>
+  <symbol id="i-dir" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></symbol>
+  <symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5.5v13l10.5-6.5z" fill="currentColor"/></symbol>
+</svg>
+
+<!-- ================= Login ================= -->
+<section class="login" id="tela-login" hidden>
+  <div class="cartao surgir">
+    <svg class="aliancas" aria-hidden="true"><use href="#aliancas"/></svg>
+    <span class="rotulo">Área dos noivos</span>
+    <h1 class="titulo">Painel de fotos</h1>
+    <p>Entre com a senha para ver as fotos enviadas pelos convidados.</p>
     <form id="form-login">
       <input class="campo" type="password" id="senha" placeholder="Senha" autocomplete="current-password" required>
       <button class="botao" type="submit">Entrar</button>
       <p class="msg-erro" id="erro-login"></p>
     </form>
-  </section>
+  </div>
+</section>
 
-  <!-- Painel -->
-  <section id="tela-painel" class="oculto">
-    <div class="topo">
-      <h1 class="serif" id="titulo">Painel</h1>
-      <button class="botao secundario" id="sair">Sair</button>
-    </div>
-
-    <div class="grade-topo">
-      <div>
-        <div class="numeros">
-          <div class="cartao"><strong id="n-fotos">0</strong><span>fotos e vídeos</span></div>
-          <div class="cartao"><strong id="n-convidados">0</strong><span>convidados enviaram</span></div>
-        </div>
-
-        <div class="filtros">
-          <select class="campo" id="filtro"></select>
-          <button class="botao" id="baixar-zip">⬇ Baixar tudo (.zip)</button>
-          <button class="botao secundario" id="atualizar">↻ Atualizar</button>
-        </div>
-        <p class="suave" id="zip-status" style="font-size:.85rem;margin:0"></p>
-      </div>
-
-      <div class="cartao qr">
-        <strong>QR Code para os convidados</strong>
-        <img id="qr-img" alt="QR Code do site">
-        <p class="url" id="qr-url"></p>
-        <div class="acoes">
-          <button class="botao" id="imprimir">🖨 Imprimir cartão</button>
-          <a class="botao secundario" href="/api/painel/qrcode.png?baixar=1">Baixar QR (PNG)</a>
-        </div>
-        <div class="aviso-local oculto" id="aviso-local">
-          Este endereço é da sua rede local: só funciona em celulares no mesmo Wi-Fi.
-          Para o casamento, imprima o QR Code acessando o painel pelo site no ar (Vercel).
+<!-- ================= Painel ================= -->
+<div id="tela-painel" hidden>
+  <header class="topo">
+    <div class="topo-in">
+      <div class="marca">
+        <svg aria-hidden="true"><use href="#aliancas"/></svg>
+        <div style="min-width:0">
+          <div class="nome" id="marca-nome">Painel</div>
+          <span class="rotulo">Painel de fotos</span>
         </div>
       </div>
+      <div class="espaco"></div>
+      <a class="botao-linha so-desktop" href="/" target="_blank" rel="noopener"><svg class="ic"><use href="#i-externo"/></svg>Página dos convidados</a>
+      <button class="botao-linha" id="sair"><svg class="ic"><use href="#i-sair"/></svg>Sair</button>
+    </div>
+  </header>
+
+  <main class="conteudo">
+    <div class="numeros">
+      <div class="cartao numero"><div class="ic-caixa"><svg class="ic"><use href="#i-imagem"/></svg></div><div><strong id="n-fotos">0</strong><span>Fotos</span></div></div>
+      <div class="cartao numero"><div class="ic-caixa"><svg class="ic"><use href="#i-video"/></svg></div><div><strong id="n-videos">0</strong><span>Vídeos</span></div></div>
+      <div class="cartao numero"><div class="ic-caixa"><svg class="ic"><use href="#i-pessoas"/></svg></div><div><strong id="n-convidados">0</strong><span>Convidados participaram</span></div></div>
+      <div class="cartao numero"><div class="ic-caixa"><svg class="ic"><use href="#i-disco"/></svg></div><div><strong id="n-espaco">0 MB</strong><span>Espaço utilizado</span></div></div>
     </div>
 
-    <div class="galeria" id="galeria" style="margin-top:1.5rem"></div>
-  </section>
-</main>
+    <div class="grade">
+      <!-- Galeria -->
+      <section class="cartao bloco">
+        <div class="bloco-cab">
+          <h2>Galeria</h2>
+          <div class="ferramentas">
+            <select class="campo" id="filtro" aria-label="Filtrar por convidado"></select>
+            <button class="botao-linha" id="atualizar" title="Atualizar"><svg class="ic"><use href="#i-atualizar"/></svg>Atualizar</button>
+            <button class="botao" id="baixar-zip"><svg class="ic"><use href="#i-baixar"/></svg><span id="baixar-zip-texto">Baixar tudo</span></button>
+          </div>
+        </div>
+        <p class="zip-status" id="zip-status" hidden></p>
+        <div class="galeria" id="galeria"></div>
+      </section>
 
-<!-- Conteúdo da impressão -->
+      <!-- Lateral -->
+      <aside class="lateral">
+        <section class="cartao bloco">
+          <h3>QR Code dos convidados</h3>
+          <p class="desc">Imprima e coloque nas mesas. Os convidados apontam a câmera e enviam as fotos.</p>
+          <div class="qr-moldura"><img id="qr-img" alt="QR Code do site"></div>
+          <div class="url-site"><span id="qr-url"></span><button id="copiar" title="Copiar link"><svg class="ic"><use href="#i-copiar"/></svg></button></div>
+          <div class="acoes-col">
+            <button class="botao" id="imprimir"><svg class="ic"><use href="#i-imprimir"/></svg>Imprimir cartão</button>
+            <a class="botao-linha" href="/api/painel/qrcode.png?baixar=1"><svg class="ic"><use href="#i-baixar"/></svg>Baixar QR Code (PNG)</a>
+          </div>
+          <div class="aviso-local" id="aviso-local" hidden>
+            Este endereço é da sua rede local e só abre em celulares no mesmo Wi-Fi. Para o casamento, imprima o QR Code acessando o painel pelo site publicado.
+          </div>
+        </section>
+
+        <section class="cartao bloco">
+          <h3>Foto ou logo do casal</h3>
+          <p class="desc">Aparece no topo da página dos convidados e no cartão impresso. Use uma imagem quadrada.</p>
+          <div class="capa-previa"><div id="capa-previa"><svg aria-hidden="true"><use href="#aliancas"/></svg></div></div>
+          <input type="file" id="entrada-capa" accept="image/jpeg,image/png,image/webp">
+          <div class="acoes-col">
+            <button class="botao-linha" id="trocar-capa"><svg class="ic"><use href="#i-enviar"/></svg><span id="trocar-capa-texto">Enviar imagem</span></button>
+            <button class="botao-linha perigo" id="remover-capa" hidden><svg class="ic"><use href="#i-lixo"/></svg>Remover</button>
+          </div>
+          <p class="msg-erro" id="capa-msg" style="margin-top:.6rem;text-align:center"></p>
+        </section>
+      </aside>
+    </div>
+  </main>
+</div>
+
+<!-- ================= Visualizador ================= -->
+<div class="visor" id="visor" hidden role="dialog" aria-modal="true">
+  <div class="visor-topo">
+    <div class="info"><strong id="visor-nome"></strong><span id="visor-detalhe"></span></div>
+    <a class="visor-btn" id="visor-baixar" title="Baixar"><svg class="ic"><use href="#i-baixar"/></svg></a>
+    <button class="visor-btn perigo" id="visor-apagar" title="Apagar"><svg class="ic"><use href="#i-lixo"/></svg></button>
+    <button class="visor-btn" id="visor-fechar" title="Fechar (Esc)"><svg class="ic"><use href="#i-x"/></svg></button>
+  </div>
+  <div class="visor-palco" id="visor-palco">
+    <button class="visor-btn visor-nav esq" id="visor-ant" title="Anterior"><svg class="ic"><use href="#i-esq"/></svg></button>
+    <div id="visor-midia"></div>
+    <button class="visor-btn visor-nav dir" id="visor-prox" title="Próxima"><svg class="ic"><use href="#i-dir"/></svg></button>
+  </div>
+</div>
+
+<!-- ================= Impressão ================= -->
 <div id="impressao">
-  <h2 id="imp-noivos"></h2>
-  <p>Compartilhe com a gente as fotos que você tirou!</p>
-  <img id="imp-qr" alt="">
-  <p>Aponte a câmera do celular para o código</p>
-  <p style="color:#777;font-size:.95rem" id="imp-url"></p>
+  <div class="moldura">
+    <img class="retrato" id="imp-retrato" alt="" hidden>
+    <svg class="aliancas" id="imp-aliancas" aria-hidden="true"><use href="#aliancas"/></svg>
+    <h2 id="imp-noivos"></h2>
+    <p class="convite">Compartilhe com a gente os momentos que você registrou</p>
+    <img class="qr" id="imp-qr" alt="">
+    <p class="instr">Aponte a câmera do celular</p>
+    <p class="url" id="imp-url"></p>
+  </div>
 </div>
 
 <script type="module">
 import { downloadZip } from '/vendor/client-zip.js';
-{
-  const $ = (id) => document.getElementById(id);
-  let dados = { fotos: [], convidados: [] };
-  let evento = {};
 
-  async function api(url, opcoes) {
-    const r = await fetch(url, opcoes);
-    if (r.status === 401) { mostrarLogin(); throw new Error('401'); }
-    return r;
-  }
+const $ = (id) => document.getElementById(id);
+const icone = (n) => `<svg class="ic"><use href="#i-${n}"/></svg>`;
+let dados = { fotos: [], convidados: [] };
+let evento = {};
+let visiveis = [];
 
-  function mostrarLogin() {
-    $('tela-login').classList.remove('oculto');
-    $('tela-painel').classList.add('oculto');
-    $('senha').focus();
-  }
-
-  $('form-login').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    $('erro-login').textContent = '';
-    const r = await fetch('/api/painel/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ senha: $('senha').value }),
-    });
-    if (!r.ok) { $('erro-login').textContent = 'Senha incorreta'; return; }
-    $('senha').value = '';
-    carregar();
+// ---------- Utilidades ----------
+async function api(url, opcoes) {
+  const r = await fetch(url, opcoes);
+  if (r.status === 401) { mostrarLogin(); throw new Error('401'); }
+  return r;
+}
+function formatarTamanho(b) {
+  if (!b) return '0 MB';
+  if (b < 1024 ** 3) return (b / 1024 ** 2).toFixed(b < 10 * 1024 ** 2 ? 1 : 0).replace('.', ',') + ' MB';
+  return (b / 1024 ** 3).toFixed(2).replace('.', ',') + ' GB';
+}
+function formatarData(iso) {
+  const d = new Date(iso);
+  return d.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' }) + ' · ' + d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+}
+function nomesComE(el, texto) {
+  el.textContent = '';
+  String(texto || '').split(/\s*&\s*/).forEach((p, i) => {
+    if (i) { const e = document.createElement('span'); e.className = 'e'; e.textContent = '&'; el.append(' ', e, ' '); }
+    el.append(p);
   });
+}
+function nomeSeguro(s) {
+  return String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-zA-Z0-9._ -]/g, '').trim().slice(0, 60) || 'arquivo';
+}
 
-  $('sair').addEventListener('click', async () => {
-    await fetch('/api/painel/logout', { method: 'POST' });
-    mostrarLogin();
+// ---------- Login ----------
+function mostrarLogin() {
+  $('tela-login').hidden = false;
+  $('tela-painel').hidden = true;
+  fecharVisor();
+  setTimeout(() => $('senha').focus(), 50);
+}
+
+$('form-login').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  $('erro-login').textContent = '';
+  const r = await fetch('/api/painel/login', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ senha: $('senha').value }),
   });
+  if (!r.ok) {
+    const j = await r.json().catch(() => ({}));
+    $('erro-login').textContent = j.erro || 'Senha incorreta';
+    return;
+  }
+  $('senha').value = '';
+  carregar();
+});
 
-  function formatarHora(iso) {
-    const d = new Date(iso);
-    return d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }) + ' ' +
-      d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+$('sair').addEventListener('click', async () => {
+  await fetch('/api/painel/logout', { method: 'POST' });
+  mostrarLogin();
+});
+
+// ---------- Galeria ----------
+function preencherFiltro() {
+  const sel = $('filtro');
+  const atual = sel.value;
+  sel.innerHTML = '';
+  sel.add(new Option(`Todos os convidados (${dados.fotos.length})`, ''));
+  for (const c of dados.convidados) sel.add(new Option(`${c.nome} (${c.total})`, c.convidadoId));
+  if ([...sel.options].some((o) => o.value === atual)) sel.value = atual;
+}
+
+function renderizar() {
+  const filtro = $('filtro').value;
+  visiveis = filtro ? dados.fotos.filter((f) => f.convidadoId === filtro) : dados.fotos;
+
+  const videos = dados.fotos.filter((f) => f.tipo.startsWith('video/')).length;
+  $('n-fotos').textContent = (dados.fotos.length - videos).toLocaleString('pt-BR');
+  $('n-videos').textContent = videos.toLocaleString('pt-BR');
+  $('n-convidados').textContent = dados.convidados.length.toLocaleString('pt-BR');
+  $('n-espaco').textContent = formatarTamanho(dados.fotos.reduce((s, f) => s + (f.tamanho || 0), 0));
+  if (!zipando) $('baixar-zip-texto').textContent = filtro ? 'Baixar deste convidado' : 'Baixar tudo';
+  $('baixar-zip').disabled = !visiveis.length;
+
+  const g = $('galeria');
+  g.innerHTML = '';
+  if (!visiveis.length) {
+    g.innerHTML = `<div class="vazio"><svg aria-hidden="true"><use href="#aliancas"/></svg><strong>Nenhuma foto ainda</strong>Compartilhe o QR Code com os convidados para começar a receber os momentos.</div>`;
+    return;
   }
 
-  function renderizar() {
+  visiveis.forEach((f, i) => {
+    const b = document.createElement('button');
+    b.className = 'item';
+    b.type = 'button';
+    b.setAttribute('aria-label', `Abrir arquivo de ${f.nome}`);
+    if (f.tipo.startsWith('video/')) {
+      const v = document.createElement('video');
+      v.src = (f.url || '') + '#t=0.5';
+      v.preload = 'metadata'; v.muted = true; v.playsInline = true;
+      b.appendChild(v);
+      b.insertAdjacentHTML('beforeend', `<span class="selo-video">${icone('play')}</span>`);
+    } else {
+      const img = document.createElement('img');
+      img.src = f.url || '';
+      img.loading = 'lazy';
+      img.alt = '';
+      b.appendChild(img);
+    }
+    const sobre = document.createElement('div');
+    sobre.className = 'sobre';
+    const nome = document.createElement('strong');
+    nome.textContent = f.nome;
+    sobre.append(nome, formatarData(f.enviadaEm));
+    b.appendChild(sobre);
+    b.addEventListener('click', () => abrirVisor(i));
+    g.appendChild(b);
+  });
+}
+
+async function carregar() {
+  try {
+    const r = await api('/api/painel/fotos');
+    if (!r.ok) throw new Error((await r.json().catch(() => ({}))).erro || 'Falha ao carregar');
+    dados = await r.json();
+  } catch (e) {
+    if (e.message !== '401') alert(e.message);
+    return;
+  }
+  $('tela-login').hidden = true;
+  $('tela-painel').hidden = false;
+
+  const qr = '/api/painel/qrcode.png?v=' + encodeURIComponent(dados.urlSite);
+  $('qr-img').src = qr;
+  $('imp-qr').src = qr;
+  $('qr-url').textContent = dados.urlSite.replace(/^https?:\/\//, '');
+  $('imp-url').textContent = dados.urlSite.replace(/^https?:\/\//, '');
+  $('aviso-local').hidden = !/^http:\/\/(localhost|127\.|10\.|192\.168\.|172\.(1[6-9]|2\d|3[01])\.)/.test(dados.urlSite);
+
+  preencherFiltro();
+  renderizar();
+}
+
+$('filtro').addEventListener('change', renderizar);
+$('atualizar').addEventListener('click', carregar);
+
+// ---------- Visualizador ----------
+let atual = -1;
+function abrirVisor(i) {
+  atual = i;
+  const f = visiveis[i];
+  if (!f) return fecharVisor();
+  $('visor-nome').textContent = f.nome;
+  $('visor-detalhe').textContent = `${formatarData(f.enviadaEm)} · ${formatarTamanho(f.tamanho)} · ${i + 1} de ${visiveis.length}`;
+  $('visor-baixar').href = '/api/painel/arquivo/' + f.id;
+  const m = $('visor-midia');
+  m.innerHTML = '';
+  if (f.tipo.startsWith('video/')) {
+    const v = document.createElement('video');
+    v.src = f.url; v.controls = true; v.autoplay = true; v.playsInline = true;
+    m.appendChild(v);
+  } else {
+    const img = document.createElement('img');
+    img.src = f.url; img.alt = `Foto enviada por ${f.nome}`;
+    m.appendChild(img);
+  }
+  $('visor-ant').style.visibility = i > 0 ? 'visible' : 'hidden';
+  $('visor-prox').style.visibility = i < visiveis.length - 1 ? 'visible' : 'hidden';
+  $('visor').hidden = false;
+  document.body.style.overflow = 'hidden';
+}
+function fecharVisor() {
+  $('visor').hidden = true;
+  $('visor-midia').innerHTML = '';
+  document.body.style.overflow = '';
+  atual = -1;
+}
+$('visor-fechar').addEventListener('click', fecharVisor);
+$('visor-ant').addEventListener('click', () => abrirVisor(atual - 1));
+$('visor-prox').addEventListener('click', () => abrirVisor(atual + 1));
+$('visor-palco').addEventListener('click', (e) => { if (e.target === e.currentTarget) fecharVisor(); });
+document.addEventListener('keydown', (e) => {
+  if ($('visor').hidden) return;
+  if (e.key === 'Escape') fecharVisor();
+  if (e.key === 'ArrowLeft' && atual > 0) abrirVisor(atual - 1);
+  if (e.key === 'ArrowRight' && atual < visiveis.length - 1) abrirVisor(atual + 1);
+});
+$('visor-apagar').addEventListener('click', async () => {
+  const f = visiveis[atual];
+  if (!f || !confirm(`Apagar este arquivo enviado por ${f.nome}?\nEssa ação não pode ser desfeita.`)) return;
+  await api('/api/painel/fotos/' + f.id, { method: 'DELETE' });
+  const pos = atual;
+  dados.fotos = dados.fotos.filter((x) => x.id !== f.id);
+  const c = dados.convidados.find((x) => x.convidadoId === f.convidadoId);
+  if (c && --c.total === 0) dados.convidados = dados.convidados.filter((x) => x !== c);
+  preencherFiltro();
+  renderizar();
+  if (visiveis.length) abrirVisor(Math.min(pos, visiveis.length - 1)); else fecharVisor();
+});
+
+// ---------- QR Code ----------
+$('imprimir').addEventListener('click', () => window.print());
+$('copiar').addEventListener('click', async () => {
+  try {
+    await navigator.clipboard.writeText(dados.urlSite);
+    $('copiar').innerHTML = icone('check');
+    setTimeout(() => { $('copiar').innerHTML = icone('copiar'); }, 1500);
+  } catch { prompt('Copie o link:', dados.urlSite); }
+});
+
+// ---------- Foto do casal ----------
+function mostrarCapa(url) {
+  const p = $('capa-previa');
+  if (url) {
+    p.innerHTML = '';
+    const img = document.createElement('img');
+    img.src = url; img.alt = 'Foto do casal';
+    p.appendChild(img);
+    $('imp-retrato').src = url;
+  } else {
+    p.innerHTML = '<svg aria-hidden="true"><use href="#aliancas"/></svg>';
+  }
+  $('imp-retrato').hidden = !url;
+  $('imp-aliancas').style.display = url ? 'none' : '';
+  $('remover-capa').hidden = !url;
+  $('trocar-capa-texto').textContent = url ? 'Trocar imagem' : 'Enviar imagem';
+}
+
+async function prepararCapa(file) {
+  // Reduz para no máximo 1200px (carrega rápido no celular dos convidados)
+  try {
+    const bmp = await createImageBitmap(file, { imageOrientation: 'from-image' });
+    const escala = Math.min(1, 1200 / Math.max(bmp.width, bmp.height));
+    const c = document.createElement('canvas');
+    c.width = Math.round(bmp.width * escala); c.height = Math.round(bmp.height * escala);
+    c.getContext('2d').drawImage(bmp, 0, 0, c.width, c.height);
+    const tipo = file.type === 'image/png' ? 'image/png' : 'image/jpeg';
+    const blob = await new Promise((r) => c.toBlob(r, tipo, 0.9));
+    return blob ? new File([blob], 'capa', { type: tipo }) : file;
+  } catch { return file; }
+}
+
+$('trocar-capa').addEventListener('click', () => $('entrada-capa').click());
+$('entrada-capa').addEventListener('change', async (e) => {
+  const original = e.target.files[0];
+  e.target.value = '';
+  if (!original) return;
+  const msg = $('capa-msg');
+  msg.textContent = '';
+  $('trocar-capa').disabled = true;
+  $('trocar-capa-texto').textContent = 'Enviando…';
+  try {
+    const file = await prepararCapa(original);
+    const r1 = await api('/api/painel/capa/iniciar', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ tipo: file.type }) });
+    const ini = await r1.json();
+    if (!r1.ok) throw new Error(ini.erro);
+    const fd = new FormData();
+    fd.append('cacheControl', '3600');
+    fd.append('', file, 'capa');
+    const up = await fetch(ini.urlEnvio, { method: 'PUT', body: fd });
+    if (!up.ok) throw new Error('Falha no envio da imagem');
+    const r2 = await api('/api/painel/capa/confirmar', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ caminho: ini.caminho }) });
+    const fim = await r2.json();
+    if (!r2.ok) throw new Error(fim.erro);
+    mostrarCapa(fim.capaUrl);
+  } catch (err) {
+    if (err.message !== '401') msg.textContent = err.message || 'Não foi possível enviar a imagem';
+    mostrarCapa($('imp-retrato').hidden ? null : $('imp-retrato').src);
+  } finally {
+    $('trocar-capa').disabled = false;
+  }
+});
+
+$('remover-capa').addEventListener('click', async () => {
+  if (!confirm('Remover a foto do casal da página dos convidados?')) return;
+  await api('/api/painel/capa', { method: 'DELETE' });
+  mostrarCapa(null);
+});
+
+// ---------- ZIP montado no navegador (uma pasta por convidado) ----------
+let zipando = false;
+$('baixar-zip').addEventListener('click', async () => {
+  if (zipando) return;
+  zipando = true;
+  const status = $('zip-status');
+  $('baixar-zip').disabled = true;
+  status.hidden = false;
+  try {
+    await carregar(); // links novos (expiram em 1h)
     const filtro = $('filtro').value;
-    const lista = filtro ? dados.fotos.filter((f) => f.convidadoId === filtro) : dados.fotos;
+    const lista = (filtro ? dados.fotos.filter((f) => f.convidadoId === filtro) : dados.fotos).filter((f) => f.url);
+    if (!lista.length) { status.textContent = 'Nenhum arquivo para baixar.'; return; }
 
-    $('n-fotos').textContent = dados.fotos.length;
-    $('n-convidados').textContent = dados.convidados.length;
-    if (!zipando) $('baixar-zip').textContent = filtro ? '⬇ Baixar deste convidado (.zip)' : '⬇ Baixar tudo (.zip)';
+    const convidado = filtro ? dados.convidados.find((c) => c.convidadoId === filtro) : null;
+    const nomeZip = nomeSeguro(`fotos ${evento.noivos || 'casamento'}${convidado ? ' - ' + convidado.nome : ''}`).replace(/ /g, '-') + '.zip';
 
-    const g = $('galeria');
-    g.innerHTML = '';
-    if (!lista.length) {
-      const v = document.createElement('div');
-      v.className = 'vazio';
-      v.style.gridColumn = '1 / -1';
-      v.textContent = 'Nenhuma foto ainda. Compartilhe o QR Code com os convidados!';
-      g.appendChild(v);
-      return;
-    }
-
-    for (const f of lista) {
-      const url = f.url || '';
-      const card = document.createElement('div');
-      card.className = 'foto';
-
-      const a = document.createElement('a');
-      a.className = 'midia';
-      a.href = url;
-      a.target = '_blank';
-      let midia;
-      if (f.tipo.startsWith('video/')) {
-        midia = document.createElement('video');
-        midia.src = url + '#t=0.5';
-        midia.preload = 'metadata';
-        midia.muted = true;
-      } else {
-        midia = document.createElement('img');
-        midia.src = url;
-        midia.loading = 'lazy';
-        midia.alt = 'Foto de ' + f.nome;
+    async function* arquivos() {
+      for (let i = 0; i < lista.length; i++) {
+        const f = lista[i];
+        status.textContent = `Preparando arquivo ${i + 1} de ${lista.length}…`;
+        const r = await fetch(f.url);
+        if (!r.ok) continue;
+        yield {
+          name: `${nomeSeguro(f.nome)}/${String(i + 1).padStart(4, '0')}_${nomeSeguro(f.nomeOriginal || 'foto')}`,
+          lastModified: new Date(f.tiradaEm || f.enviadaEm),
+          input: r,
+        };
       }
-      a.appendChild(midia);
-
-      const info = document.createElement('div');
-      info.className = 'info';
-      const txt = document.createElement('div');
-      const nome = document.createElement('strong');
-      nome.textContent = f.nome;
-      const hora = document.createElement('span');
-      hora.className = 'suave';
-      hora.textContent = formatarHora(f.enviadaEm);
-      txt.append(nome, hora);
-
-      const baixar = document.createElement('a');
-      baixar.href = '/api/painel/arquivo/' + f.id;
-      baixar.title = 'Baixar';
-      baixar.textContent = '⬇';
-      baixar.style.textDecoration = 'none';
-      baixar.style.opacity = '.55';
-
-      const apagar = document.createElement('button');
-      apagar.title = 'Apagar';
-      apagar.textContent = '🗑';
-      apagar.addEventListener('click', async () => {
-        if (!confirm(`Apagar esta foto de ${f.nome}? Não dá para desfazer.`)) return;
-        await api('/api/painel/fotos/' + f.id, { method: 'DELETE' });
-        carregar();
-      });
-
-      const botoes = document.createElement('span');
-      botoes.style.display = 'flex';
-      botoes.style.alignItems = 'center';
-      botoes.style.gap = '.2rem';
-      botoes.append(baixar, apagar);
-
-      info.append(txt, botoes);
-      card.append(a, info);
-      g.appendChild(card);
     }
-  }
 
-  function preencherFiltro() {
-    const sel = $('filtro');
-    const atual = sel.value;
-    sel.innerHTML = '';
-    const todos = document.createElement('option');
-    todos.value = '';
-    todos.textContent = `Todos os convidados (${dados.fotos.length})`;
-    sel.appendChild(todos);
-    for (const c of dados.convidados) {
-      const o = document.createElement('option');
-      o.value = c.convidadoId;
-      o.textContent = `${c.nome} (${c.total})`;
-      sel.appendChild(o);
+    if (window.showSaveFilePicker) {
+      let destino;
+      try {
+        destino = await window.showSaveFilePicker({ suggestedName: nomeZip, types: [{ description: 'Arquivo ZIP', accept: { 'application/zip': ['.zip'] } }] });
+      } catch { status.hidden = true; return; }
+      await downloadZip(arquivos()).body.pipeTo(await destino.createWritable());
+    } else {
+      const blob = await downloadZip(arquivos()).blob();
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = nomeZip;
+      a.click();
+      setTimeout(() => URL.revokeObjectURL(a.href), 60000);
     }
-    if ([...sel.options].some((o) => o.value === atual)) sel.value = atual;
-  }
-
-  async function carregar() {
-    try {
-      const r = await api('/api/painel/fotos');
-      dados = await r.json();
-    } catch { return; }
-
-    $('tela-login').classList.add('oculto');
-    $('tela-painel').classList.remove('oculto');
-
-    $('titulo').textContent = evento.noivos ? `Fotos • ${evento.noivos}` : 'Painel';
-    $('qr-url').textContent = dados.urlSite;
-    const qr = '/api/painel/qrcode.png?v=' + encodeURIComponent(dados.urlSite);
-    $('qr-img').src = qr;
-    $('imp-qr').src = qr;
-    $('imp-url').textContent = dados.urlSite;
-    $('imp-noivos').textContent = evento.noivos || '';
-    const local = /^http:\/\/(localhost|127\.|10\.|192\.168\.|172\.(1[6-9]|2\d|3[01])\.)/.test(dados.urlSite);
-    $('aviso-local').classList.toggle('oculto', !local);
-
-    preencherFiltro();
+    status.textContent = `✓ ${lista.length} arquivos salvos em ${nomeZip}`;
+  } catch (e) {
+    console.error(e);
+    status.textContent = 'Não foi possível gerar o arquivo. Tente novamente.';
+  } finally {
+    zipando = false;
+    $('baixar-zip').disabled = !visiveis.length;
     renderizar();
   }
+});
 
-  $('filtro').addEventListener('change', renderizar);
-  $('atualizar').addEventListener('click', carregar);
-  $('imprimir').addEventListener('click', () => window.print());
-
-  // ---------- ZIP montado no navegador (uma pasta por convidado) ----------
-  function nomeSeguro(s) {
-    return String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '')
-      .replace(/[^a-zA-Z0-9._ -]/g, '').trim().slice(0, 60) || 'arquivo';
-  }
-
-  let zipando = false;
-  $('baixar-zip').addEventListener('click', async () => {
-    if (zipando) return;
-    zipando = true;
-    const botao = $('baixar-zip');
-    const status = $('zip-status');
-    botao.disabled = true;
-    try {
-      await carregar(); // links novos (os anteriores expiram em 1h)
-      const filtro = $('filtro').value;
-      const lista = (filtro ? dados.fotos.filter((f) => f.convidadoId === filtro) : dados.fotos).filter((f) => f.url);
-      if (!lista.length) { status.textContent = 'Nenhuma foto para baixar.'; return; }
-
-      const convidado = filtro ? dados.convidados.find((c) => c.convidadoId === filtro) : null;
-      const nomeZip = nomeSeguro(`fotos ${evento.noivos || 'casamento'}${convidado ? ' - ' + convidado.nome : ''}`).replace(/ /g, '-') + '.zip';
-
-      async function* arquivos() {
-        for (let i = 0; i < lista.length; i++) {
-          const f = lista[i];
-          status.textContent = `Baixando ${i + 1} de ${lista.length}…`;
-          const r = await fetch(f.url);
-          if (!r.ok) continue;
-          yield {
-            name: `${nomeSeguro(f.nome)}/${String(i + 1).padStart(4, '0')}_${nomeSeguro(f.nomeOriginal || 'foto')}`,
-            lastModified: new Date(f.tiradaEm || f.enviadaEm),
-            input: r,
-          };
-        }
-      }
-
-      if (window.showSaveFilePicker) {
-        // Chrome/Edge: grava direto no disco, sem limite de memória
-        let destino;
-        try {
-          destino = await window.showSaveFilePicker({ suggestedName: nomeZip, types: [{ description: 'ZIP', accept: { 'application/zip': ['.zip'] } }] });
-        } catch { status.textContent = ''; return; } // cancelou
-        await downloadZip(arquivos()).body.pipeTo(await destino.createWritable());
-      } else {
-        const blob = await downloadZip(arquivos()).blob();
-        const a = document.createElement('a');
-        a.href = URL.createObjectURL(blob);
-        a.download = nomeZip;
-        a.click();
-        setTimeout(() => URL.revokeObjectURL(a.href), 60000);
-      }
-      status.textContent = `✓ ${lista.length} arquivos baixados`;
-    } catch (e) {
-      console.error(e);
-      status.textContent = 'Falha ao gerar o .zip. Tente de novo.';
-    } finally {
-      zipando = false;
-      botao.disabled = false;
-    }
-  });
-
-  fetch('/api/evento').then((r) => r.json()).then((ev) => { evento = ev; }).finally(carregar);
-}
+// ---------- Início ----------
+fetch('/api/evento').then((r) => r.json()).then((ev) => {
+  evento = ev;
+  nomesComE($('marca-nome'), ev.noivos);
+  nomesComE($('imp-noivos'), ev.noivos);
+  document.title = `Painel • ${ev.noivos}`;
+  mostrarCapa(ev.capaUrl);
+}).catch(() => {}).finally(carregar);
 </script>
 </body>
 </html>

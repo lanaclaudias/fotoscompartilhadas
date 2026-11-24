@@ -1,58 +1,123 @@
 :root {
-  --fundo: #faf7f2;
-  --cartao: #ffffff;
-  --texto: #2f2a26;
-  --suave: #7d746c;
-  --borda: #e8e1d7;
-  --destaque: #8a6d3b;
-  --destaque-escuro: #6f5629;
-  --ok: #3f7d4e;
-  --erro: #b23b3b;
-  --raio: 14px;
+  --branco: #ffffff;
+  --fundo-suave: #fbfaf8;
+  --texto: #1c1b19;
+  --texto-2: #5c5852;
+  --texto-3: #9b958c;
+  --linha: #ece7df;
+  --linha-forte: #ddd5c8;
+
+  --ouro: #b08d57;
+  --ouro-claro: #dcc493;
+  --ouro-escuro: #8a6a36;
+  --ouro-fundo: #f8f3ea;
+  --gradiente-ouro: linear-gradient(135deg, #d6b978 0%, #b08d57 50%, #8f6d38 100%);
+
+  --ok: #2e7a55;
+  --erro: #b3423a;
+
+  --raio: 18px;
+  --raio-p: 10px;
+  --sombra: 0 1px 2px rgba(28, 22, 12, .04), 0 12px 40px rgba(28, 22, 12, .06);
+  --sombra-p: 0 1px 2px rgba(28, 22, 12, .05), 0 4px 14px rgba(28, 22, 12, .05);
+
+  --fonte-titulo: 'Cormorant Garamond', 'Cormorant', Georgia, 'Times New Roman', serif;
+  --fonte: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
 }
 
 * { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
 
 body {
   margin: 0;
-  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  background: var(--fundo);
+  font-family: var(--fonte);
+  font-size: 15px;
+  background: var(--branco);
   color: var(--texto);
-  line-height: 1.5;
+  line-height: 1.55;
   -webkit-font-smoothing: antialiased;
 }
 
-.serif { font-family: Georgia, "Times New Roman", serif; }
+button, input, select { font: inherit; color: inherit; }
+img, video { max-width: 100%; }
+[hidden] { display: none !important; }
 
-button, input, select { font: inherit; }
+.titulo { font-family: var(--fonte-titulo); font-weight: 500; letter-spacing: .01em; }
+.rotulo {
+  font-size: .7rem; font-weight: 600; letter-spacing: .28em; text-transform: uppercase;
+  color: var(--ouro);
+}
+.suave { color: var(--texto-2); }
+.fraco { color: var(--texto-3); }
 
+/* ---------- Ícones ---------- */
+.ic { width: 18px; height: 18px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+
+/* ---------- Botões ---------- */
 .botao {
-  display: inline-flex; align-items: center; justify-content: center; gap: .5rem;
-  padding: .9rem 1.4rem;
+  position: relative;
+  display: inline-flex; align-items: center; justify-content: center; gap: .55rem;
+  min-height: 46px; padding: .75rem 1.4rem;
   border: 0; border-radius: 999px;
-  background: var(--destaque); color: #fff;
-  font-weight: 600; cursor: pointer; text-decoration: none;
-  transition: background .15s;
+  background: var(--gradiente-ouro); color: #fff;
+  font-weight: 600; font-size: .92rem; letter-spacing: .02em;
+  cursor: pointer; text-decoration: none; white-space: nowrap;
+  box-shadow: 0 6px 18px rgba(143, 109, 56, .25);
+  transition: transform .15s ease, box-shadow .15s ease, opacity .15s;
 }
-.botao:hover { background: var(--destaque-escuro); }
-.botao:disabled { opacity: .5; cursor: default; }
-.botao.secundario { background: transparent; color: var(--destaque); border: 1px solid var(--borda); }
-.botao.secundario:hover { background: #f3ede4; }
-.botao.perigo { background: transparent; color: var(--erro); border: 1px solid #ecd1d1; }
+.botao:hover { transform: translateY(-1px); box-shadow: 0 10px 24px rgba(143, 109, 56, .32); }
+.botao:active { transform: translateY(0); }
+.botao:disabled { opacity: .45; cursor: default; transform: none; box-shadow: none; }
+.botao:focus-visible, .botao-linha:focus-visible, .botao-texto:focus-visible { outline: 2px solid var(--ouro); outline-offset: 3px; }
 
-.campo {
-  width: 100%; padding: .85rem 1rem;
-  border: 1px solid var(--borda); border-radius: 10px;
+.botao-linha {
+  display: inline-flex; align-items: center; justify-content: center; gap: .5rem;
+  min-height: 42px; padding: .6rem 1.1rem;
+  border: 1px solid var(--linha-forte); border-radius: 999px;
   background: #fff; color: var(--texto);
+  font-weight: 500; font-size: .88rem;
+  cursor: pointer; text-decoration: none; white-space: nowrap;
+  transition: border-color .15s, background .15s, color .15s;
 }
-.campo:focus { outline: 2px solid var(--destaque); outline-offset: 1px; border-color: transparent; }
+.botao-linha:hover { border-color: var(--ouro); color: var(--ouro-escuro); }
+.botao-linha:disabled { opacity: .45; cursor: default; }
+.botao-linha.perigo:hover { border-color: var(--erro); color: var(--erro); }
 
+.botao-texto {
+  background: none; border: 0; padding: .25rem; cursor: pointer;
+  color: var(--ouro-escuro); font-weight: 500; font-size: .88rem;
+  text-decoration: underline; text-underline-offset: 3px; text-decoration-color: var(--ouro-claro);
+}
+
+/* ---------- Campos ---------- */
+.campo {
+  width: 100%; min-height: 50px; padding: .8rem 1.05rem;
+  border: 1px solid var(--linha-forte); border-radius: 12px;
+  background: #fff; color: var(--texto); font-size: 1rem;
+  transition: border-color .15s, box-shadow .15s;
+}
+.campo::placeholder { color: var(--texto-3); }
+.campo:focus { outline: none; border-color: var(--ouro); box-shadow: 0 0 0 4px rgba(176, 141, 87, .14); }
+
+/* ---------- Cartões ---------- */
 .cartao {
-  background: var(--cartao);
-  border: 1px solid var(--borda);
+  background: #fff;
+  border: 1px solid var(--linha);
   border-radius: var(--raio);
-  padding: 1.5rem;
+  box-shadow: var(--sombra);
 }
 
-.oculto { display: none !important; }
-.suave { color: var(--suave); }
+/* ---------- Divisor com alianças ---------- */
+.divisor { display: flex; align-items: center; justify-content: center; gap: 14px; }
+.divisor::before, .divisor::after {
+  content: ''; height: 1px; width: 64px;
+  background: linear-gradient(90deg, transparent, var(--ouro-claro));
+}
+.divisor::after { background: linear-gradient(90deg, var(--ouro-claro), transparent); }
+.divisor svg { width: 44px; height: 28px; }
+
+/* ---------- Animações ---------- */
+@keyframes surgir { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+@keyframes girar { to { transform: rotate(360deg); } }
+.surgir { animation: surgir .5s ease both; }
+@media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }

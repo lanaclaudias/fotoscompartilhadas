@@ -94,18 +94,39 @@ function paraCliente(row) {
   };
 }
 
+// ---------- Foto/logo do casal (guardada no Storage em _site/capa-<data>.<ext>) ----------
+const PASTA_SITE = '_site';
+const CAPA_VALIDA = /^_site\/capa-\d+\.(jpg|png|webp)$/;
+
+async function listarCapas() {
+  if (!supabase) return [];
+  const { data } = await supabase.storage.from(BUCKET).list(PASTA_SITE, { limit: 100 });
+  return (data || []).filter((o) => o.name.startsWith('capa-')).map((o) => `${PASTA_SITE}/${o.name}`).sort();
+}
+
+async function urlDaCapa() {
+  const capa = (await listarCapas()).pop();
+  if (!capa) return null;
+  const { data } = await supabase.storage.from(BUCKET).createSignedUrl(capa, 60 * 60 * 24);
+  return data ? data.signedUrl : null;
+}
+
 // ---------- App ----------
 const app = express();
 app.use(express.json({ limit: '50kb' }));
 
 // Dados públicos do evento (para a página dos convidados)
-app.get('/api/evento', (req, res) => {
+app.get('/api/evento', async (req, res) => {
+  let capaUrl = null;
+  try { capaUrl = await urlDaCapa(); } catch { /* sem capa */ }
+  res.setHeader('Cache-Control', 'no-store');
   res.json({
     noivos: config.noivos,
     data: config.data,
     mensagem: config.mensagem,
     tamanhoMaximoMB: MAX_MB,
     comprimirFotos: config.comprimirFotos !== false,
+    capaUrl,
   });
 });
 
@@ -224,6 +245,30 @@ app.delete('/api/painel/fotos/:id', exigirPainel, exigirSupabase, async (req, re
   if (!f) return res.status(404).json({ erro: 'Não encontrada' });
   await supabase.storage.from(BUCKET).remove([f.caminho]);
   await supabase.from(TABELA).delete().eq('id', req.params.id);
+  res.json({ ok: true });
+});
+
+// Foto do casal: 1) pede URL de envio  2) confirma (apaga as anteriores)  3) ou remove
+app.post('/api/painel/capa/iniciar', exigirPainel, exigirSupabase, async (req, res) => {
+  const ext = { 'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp' }[(req.body || {}).tipo];
+  if (!ext) return res.status(400).json({ erro: 'Use uma imagem JPG, PNG ou WEBP' });
+  const caminho = `${PASTA_SITE}/capa-${Date.now()}.${ext}`;
+  const { data, error } = await supabase.storage.from(BUCKET).createSignedUploadUrl(caminho);
+  if (error) return res.status(500).json({ erro: 'Não foi possível iniciar o envio' });
+  res.json({ caminho, urlEnvio: data.signedUrl });
+});
+
+app.post('/api/painel/capa/confirmar', exigirPainel, exigirSupabase, async (req, res) => {
+  const caminho = String((req.body || {}).caminho || '');
+  if (!CAPA_VALIDA.test(caminho)) return res.status(400).json({ erro: 'Caminho inválido' });
+  const antigas = (await listarCapas()).filter((c) => c !== caminho);
+  if (antigas.length) await supabase.storage.from(BUCKET).remove(antigas);
+  res.json({ ok: true, capaUrl: await urlDaCapa() });
+});
+
+app.delete('/api/painel/capa', exigirPainel, exigirSupabase, async (req, res) => {
+  const capas = await listarCapas();
+  if (capas.length) await supabase.storage.from(BUCKET).remove(capas);
   res.json({ ok: true });
 });
 
