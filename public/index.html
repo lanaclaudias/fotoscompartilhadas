@@ -85,16 +85,24 @@
       background: var(--fundo-suave); border: 1px solid var(--linha);
       animation: surgir .3s ease both;
     }
-    .mini > img, .mini > video { width: 100%; height: 100%; object-fit: cover; display: block; }
-    .mini .icone-arquivo { position: absolute; inset: 0; display: grid; place-items: center; color: var(--texto-3); }
+    .mini > img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .mini > video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity .2s; }
+    .mini > video.pronto { opacity: 1; }
+    .mini .icone-arquivo { position: absolute; inset: 0; display: grid; place-items: center; align-content: center; gap: 4px; color: var(--texto-3); font-size: .72rem; }
     .mini .icone-arquivo .ic { width: 26px; height: 26px; }
+    .mini .icone-arquivo.video { background: linear-gradient(160deg, #3a342c, #1f1b16); color: #e9dcc3; }
+    .mini .legenda {
+      position: absolute; left: 0; right: 0; bottom: 0; z-index: 2; padding: 3px 4px;
+      background: var(--erro); color: #fff; font-size: .66rem; font-weight: 600; text-align: center; line-height: 1.3;
+    }
+    .mini .legenda:empty { display: none; }
     .mini .selo-video {
       position: absolute; left: 6px; bottom: 6px; width: 22px; height: 22px; border-radius: 50%;
       background: rgba(0,0,0,.55); color: #fff; display: grid; place-items: center;
     }
     .mini .selo-video .ic { width: 11px; height: 11px; stroke: none; }
     .mini .remover {
-      position: absolute; top: 6px; right: 6px; width: 26px; height: 26px; border-radius: 50%;
+      position: absolute; top: 6px; right: 6px; z-index: 3; width: 26px; height: 26px; border-radius: 50%;
       border: 0; background: rgba(255,255,255,.94); color: var(--texto); cursor: pointer;
       display: grid; place-items: center; box-shadow: 0 2px 6px rgba(0,0,0,.15);
     }
@@ -171,6 +179,7 @@
   <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></symbol>
   <symbol id="i-alerta" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7.5v5.5M12 16.5v.01"/></symbol>
   <symbol id="i-imagem" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2.5"/><circle cx="9" cy="10" r="1.8"/><path d="M21 16l-5-5-9 9"/></symbol>
+  <symbol id="i-video" viewBox="0 0 24 24"><rect x="3" y="6" width="13" height="12" rx="2.5"/><path d="M16 10.5l5-3v9l-5-3"/></symbol>
   <symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5.5v13l10.5-6.5z" fill="currentColor"/></symbol>
   <symbol id="i-cadeado" viewBox="0 0 24 24"><rect x="5" y="10.5" width="14" height="9.5" rx="2"/><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5"/></symbol>
 </svg>
@@ -203,12 +212,12 @@
       <button type="button" class="botao-texto" id="trocar">Trocar</button>
     </div>
 
-    <input type="file" id="entrada" accept="image/*,video/*" multiple>
+    <input type="file" id="entrada" accept="image/*" multiple>
 
     <!-- Nada selecionado -->
     <div class="zona" id="zona" role="button" tabindex="0">
       <div class="circulo"><svg class="ic"><use href="#i-camera"/></svg></div>
-      <strong>Selecione suas fotos e vídeos</strong>
+      <strong id="zona-titulo">Selecione suas fotos</strong>
       <span>Você pode escolher várias de uma vez</span>
       <span class="botao" aria-hidden="true"><svg class="ic"><use href="#i-imagem"/></svg>Escolher da galeria</span>
     </div>
@@ -255,7 +264,7 @@
 <script>
 (() => {
   const $ = (id) => document.getElementById(id);
-  let evento = { tamanhoMaximoMB: 50, comprimirFotos: true };
+  let evento = { tamanhoMaximoMB: 50, comprimirFotos: true, aceitarVideos: false };
 
   // ---------- Identificação do convidado (nome + código salvo no celular) ----------
   let convidadoId = localStorage.getItem('convidadoId');
@@ -341,9 +350,13 @@
       img.onerror = () => { img.remove(); el.insertAdjacentHTML('afterbegin', `<div class="icone-arquivo">${icone('imagem')}</div>`); };
       el.appendChild(img);
     } else if (tipo.startsWith('video/')) {
+      // Fundo com ícone + tamanho; a prévia do vídeo aparece por cima se o navegador conseguir gerar
+      el.insertAdjacentHTML('afterbegin', `<div class="icone-arquivo video">${icone('video')}<span>${formatarTamanho(item.file.size)}</span></div>`);
       const v = document.createElement('video');
-      v.src = item.url + '#t=0.1';
       v.muted = true; v.playsInline = true; v.preload = 'metadata';
+      v.setAttribute('playsinline', '');
+      v.addEventListener('loadeddata', () => v.classList.add('pronto'));
+      v.src = item.url + '#t=0.1';
       el.appendChild(v);
       el.insertAdjacentHTML('beforeend', `<span class="selo-video">${icone('play')}</span>`);
     } else {
@@ -352,7 +365,8 @@
     el.insertAdjacentHTML('beforeend',
       `<button type="button" class="remover" aria-label="Remover">${icone('x')}</button>` +
       `<div class="estado"><div class="bolha"></div></div>` +
-      `<div class="barra-mini"><div></div></div>`);
+      `<div class="barra-mini"><div></div></div>` +
+      `<div class="legenda"></div>`);
     el.querySelector('.remover').addEventListener('click', () => remover(item.id));
     return el;
   }
@@ -367,23 +381,38 @@
       : estado === 'ok' ? icone('check')
       : estado === 'erro' ? icone('alerta') : '';
     item.el.title = erro || '';
+    item.el.querySelector('.legenda').textContent = estado === 'erro' ? (item.grande ? 'Muito grande' : 'Erro') : '';
   }
+
+  const limiteBytes = () => evento.tamanhoMaximoMB * 1024 * 1024;
 
   function adicionar(arquivos) {
     const jaTem = new Set(itens.map((i) => `${i.file.name}|${i.file.size}|${i.file.lastModified}`));
+    const aceito = evento.aceitarVideos ? /^(image|video)\// : /^image\//;
+    let videosIgnorados = 0;
     for (const file of arquivos) {
       const chave = `${file.name}|${file.size}|${file.lastModified}`;
       if (jaTem.has(chave)) continue;
       const t = tipoDe(file);
-      if (t && !/^(image|video)\//.test(t)) continue;
+      if (t && !aceito.test(t)) { if (t.startsWith('video/')) videosIgnorados++; continue; }
       jaTem.add(chave);
       const item = { id: ++seq, file, url: URL.createObjectURL(file), estado: 'pendente', enviado: 0, total: file.size };
       item.el = criarMiniatura(item);
       $('miniaturas').appendChild(item.el);
       itens.push(item);
+      // Vídeos não são comprimidos: se passar do limite, avisa já na seleção
+      if (t.startsWith('video/') && file.size > limiteBytes()) {
+        item.grande = true;
+        definirEstado(item, 'erro', `Vídeo maior que ${evento.tamanhoMaximoMB} MB`);
+      }
     }
     $('concluido').hidden = true;
     atualizar();
+    if (videosIgnorados) {
+      const msg = `Por enquanto só é possível enviar fotos. ${videosIgnorados === 1 ? '1 vídeo foi ignorado' : videosIgnorados + ' vídeos foram ignorados'}.`;
+      if (itens.length) { $('aviso-erro-texto').textContent = msg; $('aviso-erro').hidden = false; }
+      else alert(msg);
+    }
   }
 
   function remover(id) {
@@ -405,7 +434,17 @@
   }
 
   function atualizar() {
-    const pendentes = itens.filter((i) => i.estado !== 'ok');
+    const pendentes = itens.filter((i) => i.estado !== 'ok' && !i.grande);
+    const grandes = itens.filter((i) => i.grande).length;
+    if (!enviando) {
+      const aviso = $('aviso-erro');
+      if (grandes && !itens.some((i) => i.estado === 'erro' && !i.grande)) {
+        $('aviso-erro-texto').textContent = `${grandes === 1 ? '1 vídeo passa' : grandes + ' vídeos passam'} do limite de ${evento.tamanhoMaximoMB} MB e não ${grandes === 1 ? 'pode' : 'podem'} ser ${grandes === 1 ? 'enviado' : 'enviados'}. Toque no × para remover ou grave um trecho mais curto.`;
+        aviso.hidden = false;
+      } else if (!itens.some((i) => i.estado === 'erro')) {
+        aviso.hidden = true;
+      }
+    }
     const temItens = itens.length > 0;
     $('zona').hidden = temItens || !$('concluido').hidden;
     $('selecao').hidden = !temItens;
@@ -414,7 +453,7 @@
     $('contagem').textContent = `${n} ${n === 1 ? 'selecionado' : 'selecionados'}`;
     $('tamanho').textContent = formatarTamanho(itens.reduce((s, i) => s + i.file.size, 0));
 
-    const comErro = itens.filter((i) => i.estado === 'erro').length;
+    const comErro = itens.filter((i) => i.estado === 'erro' && !i.grande).length;
     const p = pendentes.length;
     $('enviar-texto').textContent = enviando ? 'Enviando…'
       : comErro ? `Tentar de novo (${comErro})`
@@ -501,7 +540,7 @@
 
   async function enviarTodos() {
     if (enviando) return;
-    lote = itens.filter((i) => i.estado === 'pendente' || i.estado === 'erro');
+    lote = itens.filter((i) => (i.estado === 'pendente' || i.estado === 'erro') && !i.grande);
     if (!lote.length) return;
     enviando = true;
     lote.forEach((i) => definirEstado(i, 'pendente'));
@@ -530,8 +569,12 @@
     const ok = lote.length - erros.length;
     $('progresso').hidden = true;
 
-    if (!erros.length) {
-      const total = itens.length;
+    if (!erros.length && itens.some((i) => i.grande)) {
+      // Enviou tudo que dava; mantém só os vídeos grandes na tela com o aviso
+      for (const i of itens.filter((x) => x.estado === 'ok')) { URL.revokeObjectURL(i.url); i.el.remove(); }
+      itens = itens.filter((x) => x.estado !== 'ok');
+    } else if (!erros.length) {
+      const total = lote.length;
       limpar();
       $('concluido-texto').textContent = `Recebemos ${total} ${total === 1 ? 'arquivo' : 'arquivos'}. Os noivos vão adorar reviver esses momentos pelo seu olhar.`;
       $('concluido').hidden = false;
@@ -580,6 +623,10 @@
     $('data').textContent = ev.data || '';
     $('mensagem').textContent = ev.mensagem || '';
     document.title = `${ev.noivos} • Compartilhe suas fotos`;
+    if (ev.aceitarVideos) {
+      $('entrada').accept = 'image/*,video/*';
+      $('zona-titulo').textContent = 'Selecione suas fotos e vídeos';
+    }
     if (ev.capaUrl) {
       $('foto-casal').src = ev.capaUrl;
       $('foto-casal').onload = () => { $('retrato').hidden = false; $('aliancas-topo').setAttribute('hidden', ''); };

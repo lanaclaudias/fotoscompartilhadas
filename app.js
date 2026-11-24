@@ -13,6 +13,9 @@ const config = require('./config.json');
 const SENHA = process.env.ADMIN_PASSWORD || '';
 const URL_PUBLICA = (process.env.PUBLIC_URL || config.urlPublica || '').replace(/\/+$/, '');
 const MAX_MB = Number(config.tamanhoMaximoMB || 50);
+const ACEITAR_VIDEOS = config.aceitarVideos === true;
+const TIPO_ACEITO = ACEITAR_VIDEOS ? /^(image|video)\// : /^image\//;
+const MSG_TIPO = ACEITAR_VIDEOS ? 'Envie apenas fotos ou vídeos' : 'Por enquanto, envie apenas fotos';
 const BUCKET = process.env.SUPABASE_BUCKET || 'fotos';
 const TABELA = 'fotos';
 
@@ -126,6 +129,7 @@ app.get('/api/evento', async (req, res) => {
     mensagem: config.mensagem,
     tamanhoMaximoMB: MAX_MB,
     comprimirFotos: config.comprimirFotos !== false,
+    aceitarVideos: ACEITAR_VIDEOS,
     capaUrl,
   });
 });
@@ -133,7 +137,7 @@ app.get('/api/evento', async (req, res) => {
 // 1) Convidado pede autorização para enviar um arquivo → recebe uma URL assinada do Supabase
 app.post('/api/upload/iniciar', exigirSupabase, async (req, res) => {
   const { tipo, tamanho, nomeArquivo } = req.body || {};
-  if (!/^(image|video)\//.test(String(tipo || ''))) return res.status(400).json({ erro: 'Envie apenas fotos ou vídeos' });
+  if (!TIPO_ACEITO.test(String(tipo || ''))) return res.status(400).json({ erro: MSG_TIPO });
   if (!(Number(tamanho) > 0)) return res.status(400).json({ erro: 'Arquivo vazio' });
   if (Number(tamanho) > MAX_MB * 1024 * 1024) return res.status(413).json({ erro: `Arquivo maior que ${MAX_MB} MB` });
 
@@ -154,7 +158,7 @@ app.post('/api/upload/confirmar', exigirSupabase, async (req, res) => {
   const b = req.body || {};
   const caminho = String(b.caminho || '');
   if (!CAMINHO_VALIDO.test(caminho)) return res.status(400).json({ erro: 'Caminho inválido' });
-  if (!/^(image|video)\//.test(String(b.tipo || ''))) return res.status(400).json({ erro: 'Tipo inválido' });
+  if (!TIPO_ACEITO.test(String(b.tipo || ''))) return res.status(400).json({ erro: MSG_TIPO });
 
   // Confere se o arquivo realmente chegou no Storage
   const { error: naoExiste } = await supabase.storage.from(BUCKET).createSignedUrl(caminho, 60);

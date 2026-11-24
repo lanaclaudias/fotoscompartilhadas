@@ -41,8 +41,7 @@
     .conteudo { max-width: 1280px; margin: 0 auto; padding: 1.75rem 1.5rem 4rem; }
 
     /* ---------- Números ---------- */
-    .numeros { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 1.75rem; }
-    @media (max-width: 860px) { .numeros { grid-template-columns: repeat(2, 1fr); } }
+    .numeros { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 1rem; margin-bottom: 1.75rem; }
     .numero { padding: 1.15rem 1.25rem; display: flex; align-items: center; gap: 1rem; box-shadow: var(--sombra-p); }
     .numero .ic-caixa { width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center; background: var(--ouro-fundo); color: var(--ouro-escuro); flex: none; }
     .numero .ic-caixa .ic { width: 21px; height: 21px; }
@@ -75,6 +74,12 @@
     .item:hover .sobre, .item:focus-visible .sobre { opacity: 1; }
     @media (hover: none) { .item .sobre { opacity: 1; } }
     .item .sobre strong { display: block; font-weight: 600; font-size: .82rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .item .video-fundo { position: absolute; inset: 0; display: grid; place-items: center; background: linear-gradient(160deg, #3a342c, #1f1b16); color: #e9dcc3; }
+    .item .video-fundo .ic { width: 30px; height: 30px; }
+    .item video { position: absolute; inset: 0; opacity: 0; }
+    .item video.pronto { opacity: 1; }
+    .visor-aviso { max-width: 380px; text-align: center; color: rgba(255,255,255,.85); display: grid; gap: 1rem; justify-items: center; }
+    .visor-aviso .ic { width: 40px; height: 40px; color: var(--ouro-claro); }
     .item .selo-video { position: absolute; top: 8px; left: 8px; width: 26px; height: 26px; border-radius: 50%; background: rgba(0,0,0,.55); color: #fff; display: grid; place-items: center; }
     .item .selo-video .ic { width: 12px; height: 12px; stroke: none; }
     .item:focus-visible { outline: 2px solid var(--ouro); outline-offset: 2px; }
@@ -217,7 +222,7 @@
   <main class="conteudo">
     <div class="numeros">
       <div class="cartao numero"><div class="ic-caixa"><svg class="ic"><use href="#i-imagem"/></svg></div><div><strong id="n-fotos">0</strong><span>Fotos</span></div></div>
-      <div class="cartao numero"><div class="ic-caixa"><svg class="ic"><use href="#i-video"/></svg></div><div><strong id="n-videos">0</strong><span>Vídeos</span></div></div>
+      <div class="cartao numero" id="card-videos" hidden><div class="ic-caixa"><svg class="ic"><use href="#i-video"/></svg></div><div><strong id="n-videos">0</strong><span>Vídeos</span></div></div>
       <div class="cartao numero"><div class="ic-caixa"><svg class="ic"><use href="#i-pessoas"/></svg></div><div><strong id="n-convidados">0</strong><span>Convidados participaram</span></div></div>
       <div class="cartao numero"><div class="ic-caixa"><svg class="ic"><use href="#i-disco"/></svg></div><div><strong id="n-espaco">0 MB</strong><span>Espaço utilizado</span></div></div>
     </div>
@@ -404,6 +409,7 @@ function renderizar() {
   const videos = dados.fotos.filter((f) => f.tipo.startsWith('video/')).length;
   $('n-fotos').textContent = (dados.fotos.length - videos).toLocaleString('pt-BR');
   $('n-videos').textContent = videos.toLocaleString('pt-BR');
+  $('card-videos').hidden = !evento.aceitarVideos && !videos;
   $('n-convidados').textContent = dados.convidados.length.toLocaleString('pt-BR');
   $('n-espaco').textContent = formatarTamanho(dados.fotos.reduce((s, f) => s + (f.tamanho || 0), 0));
   if (!zipando) $('baixar-zip-texto').textContent = filtro ? 'Baixar deste convidado' : 'Baixar tudo';
@@ -422,9 +428,11 @@ function renderizar() {
     b.type = 'button';
     b.setAttribute('aria-label', `Abrir arquivo de ${f.nome}`);
     if (f.tipo.startsWith('video/')) {
+      b.insertAdjacentHTML('afterbegin', `<div class="video-fundo">${icone('video')}</div>`);
       const v = document.createElement('video');
-      v.src = (f.url || '') + '#t=0.5';
       v.preload = 'metadata'; v.muted = true; v.playsInline = true;
+      v.addEventListener('loadeddata', () => v.classList.add('pronto'));
+      v.src = (f.url || '') + '#t=0.5';
       b.appendChild(v);
       b.insertAdjacentHTML('beforeend', `<span class="selo-video">${icone('play')}</span>`);
     } else {
@@ -484,7 +492,12 @@ function abrirVisor(i) {
   m.innerHTML = '';
   if (f.tipo.startsWith('video/')) {
     const v = document.createElement('video');
-    v.src = f.url; v.controls = true; v.autoplay = true; v.playsInline = true;
+    v.controls = true; v.autoplay = true; v.playsInline = true;
+    v.addEventListener('error', () => {
+      // Ex.: vídeo HEVC do iPhone no Chrome/Windows
+      m.innerHTML = `<div class="visor-aviso">${icone('video')}<p>Este vídeo foi gravado num formato que este navegador não consegue reproduzir (comum em vídeos de iPhone no Windows).<br>Baixe o arquivo para assistir.</p><a class="botao" href="/api/painel/arquivo/${f.id}">${icone('baixar')}Baixar vídeo</a></div>`;
+    });
+    v.src = f.url;
     m.appendChild(v);
   } else {
     const img = document.createElement('img');
