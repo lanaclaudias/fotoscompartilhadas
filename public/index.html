@@ -262,7 +262,13 @@
       transition: transform 1.5s cubic-bezier(.65, .05, .25, 1);
     }
     .abertura.aberta .livro-capa { transform: rotateY(-180deg); }
-    .livro-capa > .frente, .livro-capa > .verso { -webkit-backface-visibility: hidden; backface-visibility: hidden; }
+    .livro-capa > .frente, .livro-capa > .verso,
+    .livro-capa > .frente *, .livro-capa > .verso * { -webkit-backface-visibility: hidden; backface-visibility: hidden; }
+    /* Safari (iPhone) ignora backface-visibility nos filhos: troca frente/verso na metade do giro */
+    .livro-capa > .frente { visibility: visible; transition: visibility 0s linear .75s; }
+    .livro-capa > .verso { visibility: hidden; transition: visibility 0s linear .75s; }
+    .abertura.aberta .livro-capa > .frente { visibility: hidden; }
+    .abertura.aberta .livro-capa > .verso { visibility: visible; }
     .livro-capa > .verso {
       position: absolute; inset: 0; transform: rotateY(180deg); border-radius: 22px;
       display: grid; place-items: center; align-content: center; gap: 2rem; text-align: center;

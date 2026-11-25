@@ -138,22 +138,52 @@
     .botao-perigo { background: var(--erro); box-shadow: 0 6px 18px rgba(179, 66, 58, .25); }
     .botao-perigo:hover { box-shadow: 0 10px 24px rgba(179, 66, 58, .32); }
 
-    /* ---------- Impressão: cartão do QR Code ---------- */
+    /* ---------- Impressão: cartão do QR Code (tema passaporte) ---------- */
     #impressao { display: none; }
     @media print {
-      @page { margin: 0; }
-      body { background: #fff; }
+      @page { size: A4; margin: 0; }
+      html, body { background: #fff !important; }
       body > *:not(#impressao):not(.sprite) { display: none !important; }
-      #impressao { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; text-align: center; padding: 2cm; }
-      #impressao .moldura { border: 1.5px solid #b08d57; outline: 1px solid #b08d57; outline-offset: 6px; padding: 1.6cm 1.4cm; width: 13cm; }
-      #impressao .retrato { width: 3.6cm; height: 3.6cm; border-radius: 50%; object-fit: cover; border: 3px solid #b08d57; margin-bottom: .5cm; }
-      #impressao .aliancas { width: 2.2cm; height: 1.4cm; }
-      #impressao h2 { font-family: var(--fonte-script); font-weight: 400; font-size: 40pt; margin: .2cm 0; }
-      #impressao h2 .e { color: #b08d57; font-style: italic; }
-      #impressao .convite { font-family: var(--fonte-titulo); font-style: italic; font-size: 15pt; margin: .3cm 0 .5cm; color: #444; }
-      #impressao .qr { width: 6.2cm; height: 6.2cm; }
-      #impressao .instr { font-size: 9pt; letter-spacing: .22em; text-transform: uppercase; color: #8a6a36; margin: .4cm 0 .15cm; font-weight: 600; }
-      #impressao .url { font-size: 9pt; color: #777; margin: 0; }
+      #impressao {
+        display: flex; align-items: center; justify-content: center; min-height: 100vh;
+        -webkit-print-color-adjust: exact; print-color-adjust: exact;
+      }
+      #impressao .pass {
+        position: relative; width: 13.2cm; height: 19.4cm; border-radius: .7cm; overflow: hidden;
+        padding: 1.15cm 1.1cm 1cm; text-align: center; color: #d9bf8c;
+        display: flex; flex-direction: column; align-items: center;
+        background: radial-gradient(120% 90% at 25% 0%, #3d4c31 0%, #2e3a25 55%, #212b1a 100%);
+      }
+      #impressao .pass::before { /* costura */
+        content: ''; position: absolute; inset: .32cm; border-radius: .48cm; border: 1px dashed rgba(217, 191, 140, .55);
+      }
+      #impressao .pass::after { /* textura de couro */
+        content: ''; position: absolute; inset: 0; opacity: .2; mix-blend-mode: overlay;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      }
+      #impressao .pass > * { position: relative; z-index: 1; }
+      #impressao .titulo-pass { margin: 0; font-family: var(--fonte-caps); font-size: 27pt; letter-spacing: .12em; line-height: 1; color: #d2b077; }
+      #impressao .sub-pass { margin: .18cm 0 0; font-family: var(--fonte-caps); font-size: 8.5pt; letter-spacing: .3em; text-transform: uppercase; }
+      #impressao .globo { width: 5.4cm; height: auto; margin: .35cm 0 .05cm; }
+      #impressao .retrato { width: 3.4cm; height: 3.4cm; border-radius: 50%; object-fit: cover; border: 2.5px solid #c9a463; margin: .4cm 0 .1cm; }
+      #impressao h2 { margin: 0; font-family: var(--fonte-script); font-weight: 400; font-size: 34pt; line-height: 1.25; white-space: nowrap; color: #d2b077; }
+      #impressao h2 .e { color: inherit; }
+      #impressao .data { margin: .05cm 0 0; font-family: var(--fonte-caps); font-size: 9.5pt; letter-spacing: .2em; text-transform: uppercase; }
+      #impressao .pagina-qr {
+        margin-top: .45cm; width: 100%; flex: 1; display: flex; align-items: center; gap: .55cm;
+        padding: .45cm .5cm; border-radius: .3cm; background: #f7f2e8; color: #26321f;
+        box-shadow: inset 0 0 0 1px #c9a463, inset 0 0 0 4px #f7f2e8, inset 0 0 0 5px rgba(201, 164, 99, .6);
+      }
+      #impressao .qr { width: 5cm; height: 5cm; flex: none; border-radius: .15cm; background: #fff; padding: .12cm; }
+      #impressao .texto-qr { text-align: left; display: flex; flex-direction: column; gap: .2cm; }
+      #impressao .texto-qr .rot { margin: 0; font-family: var(--fonte-caps); font-size: 8pt; letter-spacing: .18em; text-transform: uppercase; color: #8a6a36; }
+      #impressao .texto-qr .chamada { margin: 0; font-family: var(--fonte-titulo); font-size: 14pt; line-height: 1.3; color: #26321f; }
+      #impressao .texto-qr .instr { margin: 0; display: flex; align-items: center; gap: .15cm; font-family: var(--fonte-caps); font-size: 7.5pt; letter-spacing: .12em; text-transform: uppercase; color: #4f5a45; }
+      #impressao .texto-qr .instr svg { width: .45cm; height: .45cm; fill: none; stroke: #56693f; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+      #impressao .texto-qr .url { margin: 0; font-size: 7pt; color: #958d7c; word-break: break-all; }
+      #impressao .rodape-pass { margin-top: .4cm; display: flex; align-items: center; justify-content: space-between; width: 100%; }
+      #impressao .rodape-pass span { font-family: var(--fonte-script); font-size: 13pt; color: #d2b077; }
+      #impressao .chip { width: 1.15cm; height: .75cm; }
     }
   </style>
 </head>
@@ -317,14 +347,26 @@
 
 <!-- ================= Impressão ================= -->
 <div id="impressao">
-  <div class="moldura">
+  <div class="pass">
+    <p class="titulo-pass">PASSAPORTE</p>
+    <p class="sub-pass">da nossa jornada</p>
     <img class="retrato" id="imp-retrato" alt="" hidden>
-    <svg class="aliancas" id="imp-aliancas" aria-hidden="true"><use href="#aliancas"/></svg>
+    <img class="globo" id="imp-aliancas" src="/img/globo-passaporte.png" alt="">
     <h2 id="imp-noivos"></h2>
-    <p class="convite">Compartilhe com a gente os momentos que você registrou</p>
-    <img class="qr" id="imp-qr" alt="">
-    <p class="instr">Aponte a câmera do celular</p>
-    <p class="url" id="imp-url"></p>
+    <p class="data" id="imp-data"></p>
+    <div class="pagina-qr">
+      <img class="qr" id="imp-qr" alt="">
+      <div class="texto-qr">
+        <p class="rot">Cartão de embarque</p>
+        <p class="chamada">Compartilhe com a gente os momentos que você registrou</p>
+        <p class="instr"><svg viewBox="0 0 24 24"><path d="M3 8.5A2.5 2.5 0 0 1 5.5 6h1.6l1.4-2h7l1.4 2h1.6A2.5 2.5 0 0 1 21 8.5v9a2.5 2.5 0 0 1-2.5 2.5h-13A2.5 2.5 0 0 1 3 17.5z"/><circle cx="12" cy="13" r="3.6"/></svg>Aponte a câmera do celular</p>
+        <p class="url" id="imp-url"></p>
+      </div>
+    </div>
+    <div class="rodape-pass">
+      <span>Toda grande jornada começa com um simples embarque</span>
+      <svg class="chip" viewBox="0 0 40 26"><rect x="1" y="1" width="38" height="24" rx="2" fill="#c9a463"/><rect x="1" y="9.5" width="38" height="7" fill="#26321f"/><circle cx="20" cy="13" r="5.5" fill="#c9a463" stroke="#26321f" stroke-width="2"/></svg>
+    </div>
   </div>
 </div>
 
@@ -721,6 +763,7 @@ fetch('/api/evento').then((r) => r.json()).then((ev) => {
   evento = ev;
   nomesComE($('marca-nome'), ev.noivos);
   nomesComE($('imp-noivos'), ev.noivos);
+  $('imp-data').textContent = ev.data || '';
   document.title = `Painel • ${ev.noivos}`;
   mostrarCapa(ev.capaUrl);
 }).catch(() => {}).finally(carregar);
