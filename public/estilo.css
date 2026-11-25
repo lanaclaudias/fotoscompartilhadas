@@ -1,27 +1,37 @@
 :root {
-  --branco: #ffffff;
-  --fundo-suave: #fbfaf8;
-  --texto: #1c1b19;
-  --texto-2: #5c5852;
-  --texto-3: #9b958c;
-  --linha: #ece7df;
-  --linha-forte: #ddd5c8;
+  /* Paleta do convite Júlio & Naiara: verde oliva, dourado e papel creme */
+  --branco: #fffdf8;
+  --papel: #f7f2e8;
+  --fundo-suave: #f6f1e6;
+  --texto: #26321f;
+  --texto-2: #4f5a45;
+  --texto-3: #958d7c;
+  --linha: #e6ddcb;
+  --linha-forte: #d5c8af;
 
-  --ouro: #b08d57;
-  --ouro-claro: #dcc493;
+  --verde: #33422a;
+  --verde-escuro: #232e1c;
+  --verde-medio: #56693f;
+  --verde-folha: #6b7f52;
+
+  --ouro: #b38b4d;
+  --ouro-claro: #d9bf8c;
   --ouro-escuro: #8a6a36;
-  --ouro-fundo: #f8f3ea;
-  --gradiente-ouro: linear-gradient(135deg, #d6b978 0%, #b08d57 50%, #8f6d38 100%);
+  --ouro-fundo: #f3ecdd;
+  --gradiente-ouro: linear-gradient(135deg, #e0c68d 0%, #b38b4d 50%, #8f6d38 100%);
+  --gradiente-verde: linear-gradient(135deg, #46573a 0%, #33422a 55%, #26321f 100%);
 
-  --ok: #2e7a55;
+  --ok: #4d6a3a;
   --erro: #b3423a;
 
   --raio: 18px;
   --raio-p: 10px;
-  --sombra: 0 1px 2px rgba(28, 22, 12, .04), 0 12px 40px rgba(28, 22, 12, .06);
-  --sombra-p: 0 1px 2px rgba(28, 22, 12, .05), 0 4px 14px rgba(28, 22, 12, .05);
+  --sombra: 0 1px 2px rgba(35, 46, 28, .05), 0 14px 40px rgba(35, 46, 28, .09);
+  --sombra-p: 0 1px 2px rgba(35, 46, 28, .05), 0 4px 14px rgba(35, 46, 28, .06);
 
-  --fonte-titulo: 'Cormorant Garamond', 'Cormorant', Georgia, 'Times New Roman', serif;
+  --fonte-titulo: 'Libre Caslon Text', Georgia, 'Times New Roman', serif;
+  --fonte-script: 'Parisienne', 'Libre Caslon Text', cursive;
+  --fonte-caps: 'Libre Caslon Text', Georgia, serif;
   --fonte: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
 }
 
@@ -59,13 +69,13 @@ img, video { max-width: 100%; }
   display: inline-flex; align-items: center; justify-content: center; gap: .55rem;
   min-height: 46px; padding: .75rem 1.4rem;
   border: 0; border-radius: 999px;
-  background: var(--gradiente-ouro); color: #fff;
+  background: var(--gradiente-verde); color: #f4ead3;
   font-weight: 600; font-size: .92rem; letter-spacing: .02em;
   cursor: pointer; text-decoration: none; white-space: nowrap;
-  box-shadow: 0 6px 18px rgba(143, 109, 56, .25);
+  box-shadow: 0 6px 18px rgba(35, 46, 28, .25), inset 0 0 0 1px rgba(217, 191, 140, .35);
   transition: transform .15s ease, box-shadow .15s ease, opacity .15s;
 }
-.botao:hover { transform: translateY(-1px); box-shadow: 0 10px 24px rgba(143, 109, 56, .32); }
+.botao:hover { transform: translateY(-1px); box-shadow: 0 10px 24px rgba(35, 46, 28, .32), inset 0 0 0 1px rgba(217, 191, 140, .55); }
 .botao:active { transform: translateY(0); }
 .botao:disabled { opacity: .45; cursor: default; transform: none; box-shadow: none; }
 .botao:focus-visible, .botao-linha:focus-visible, .botao-texto:focus-visible { outline: 2px solid var(--ouro); outline-offset: 3px; }
@@ -74,12 +84,12 @@ img, video { max-width: 100%; }
   display: inline-flex; align-items: center; justify-content: center; gap: .5rem;
   min-height: 42px; padding: .6rem 1.1rem;
   border: 1px solid var(--linha-forte); border-radius: 999px;
-  background: #fff; color: var(--texto);
+  background: var(--branco); color: var(--texto);
   font-weight: 500; font-size: .88rem;
   cursor: pointer; text-decoration: none; white-space: nowrap;
   transition: border-color .15s, background .15s, color .15s;
 }
-.botao-linha:hover { border-color: var(--ouro); color: var(--ouro-escuro); }
+.botao-linha:hover { border-color: var(--verde-medio); color: var(--verde); }
 .botao-linha:disabled { opacity: .45; cursor: default; }
 .botao-linha.perigo:hover { border-color: var(--erro); color: var(--erro); }
 
@@ -93,15 +103,15 @@ img, video { max-width: 100%; }
 .campo {
   width: 100%; min-height: 50px; padding: .8rem 1.05rem;
   border: 1px solid var(--linha-forte); border-radius: 12px;
-  background: #fff; color: var(--texto); font-size: 1rem;
+  background: var(--branco); color: var(--texto); font-size: 1rem;
   transition: border-color .15s, box-shadow .15s;
 }
 .campo::placeholder { color: var(--texto-3); }
-.campo:focus { outline: none; border-color: var(--ouro); box-shadow: 0 0 0 4px rgba(176, 141, 87, .14); }
+.campo:focus { outline: none; border-color: var(--ouro); box-shadow: 0 0 0 4px rgba(179, 139, 77, .16); }
 
 /* ---------- Cartões ---------- */
 .cartao {
-  background: #fff;
+  background: var(--branco);
   border: 1px solid var(--linha);
   border-radius: var(--raio);
   box-shadow: var(--sombra);
