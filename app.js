@@ -128,6 +128,7 @@ app.get('/api/evento', async (req, res) => {
     data: config.data,
     mensagem: config.mensagem,
     horario: config.horario || '',
+    hashtag: config.hashtag || '#EuFui',
     tamanhoMaximoMB: MAX_MB,
     comprimirFotos: config.comprimirFotos !== false,
     aceitarVideos: ACEITAR_VIDEOS,

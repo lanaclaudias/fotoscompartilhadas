@@ -131,8 +131,11 @@
     .zona .circulo .ic { width: 28px; height: 28px; stroke-width: 1.4; }
     .zona strong { font-size: 1.02rem; font-weight: 600; color: var(--verde); }
     .zona span { color: var(--texto-2); font-size: .88rem; }
-    .zona span.botao { color: #f4ead3; font-size: .92rem; }
-    .zona .botao { margin-top: .75rem; }
+    .zona { cursor: default; }
+    .zona-botoes { display: grid; gap: .6rem; width: 100%; max-width: 320px; margin-top: .8rem; }
+    .zona-botoes > * { width: 100%; min-height: 52px; font-size: .95rem; }
+    .mais-botoes { display: flex; gap: .4rem; }
+    #adicionar-camera { padding: .6rem .85rem; }
     #entrada { display: none; }
 
     /* Seleção */
@@ -215,6 +218,46 @@
     .concluido .selo .ic { width: 36px; height: 36px; stroke-width: 2; }
     .concluido p { color: var(--texto-2); margin: 0 auto 1.5rem; max-width: 340px; }
 
+    /* ---------- Câmera com filtro do casamento ---------- */
+    html.travado { overflow: hidden; }
+    .camera {
+      position: fixed; inset: 0; z-index: 200; display: grid; grid-template-rows: auto 1fr auto;
+      background: #10150d; color: #f4ead3;
+    }
+    .cam-topo { display: flex; justify-content: space-between; align-items: center; gap: .75rem; padding: max(.8rem, env(safe-area-inset-top)) 1rem .8rem; }
+    .cam-btn {
+      width: 46px; height: 46px; flex: none; border-radius: 50%; display: grid; place-items: center; cursor: pointer;
+      border: 1px solid rgba(255, 255, 255, .2); background: rgba(255, 255, 255, .08); color: #fff;
+    }
+    .cam-btn .ic { width: 22px; height: 22px; }
+    .cam-filtro {
+      display: inline-flex; align-items: center; gap: .55rem; padding: .6rem 1rem; border-radius: 999px; cursor: pointer;
+      border: 1px solid rgba(217, 191, 140, .5); background: rgba(255, 255, 255, .06); color: var(--ouro-claro);
+      font-family: var(--fonte-caps); font-size: .72rem; letter-spacing: .1em; text-transform: uppercase;
+    }
+    .cam-filtro .chave { position: relative; width: 30px; height: 17px; border-radius: 999px; background: rgba(255, 255, 255, .25); transition: background .2s; }
+    .cam-filtro .chave::after { content: ''; position: absolute; top: 2px; left: 2px; width: 13px; height: 13px; border-radius: 50%; background: #fff; transition: transform .2s; }
+    .cam-filtro.ativo .chave { background: var(--ouro); }
+    .cam-filtro.ativo .chave::after { transform: translateX(13px); }
+    .cam-palco { position: relative; overflow: hidden; margin: 0 .6rem; border-radius: 18px; background: #000; }
+    .cam-palco video, .cam-palco img, .cam-palco canvas { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+    .cam-palco video.espelho { transform: scaleX(-1); }
+    .cam-palco canvas { pointer-events: none; }
+    .cam-palco.flash::after { content: ''; position: absolute; inset: 0; background: #fff; animation: flash .35s ease-out forwards; }
+    @keyframes flash { from { opacity: .85; } to { opacity: 0; } }
+    .cam-erro { position: absolute; inset: 0; display: grid; place-items: center; align-content: center; gap: 1.1rem; padding: 2rem; text-align: center; color: #e9dcc3; }
+    .cam-erro p { margin: 0; max-width: 300px; line-height: 1.5; }
+    .cam-base { height: calc(76px + 2.3rem + env(safe-area-inset-bottom)); box-sizing: border-box; display: flex; align-items: center; justify-content: space-between; gap: .8rem; padding: 1.1rem 1.6rem max(1.2rem, env(safe-area-inset-bottom)); }
+    .cam-espaco { width: 46px; }
+    .cam-disparo {
+      width: 76px; height: 76px; border-radius: 50%; cursor: pointer; transition: transform .1s;
+      border: 4px solid var(--ouro-claro); background: #f4ead3; box-shadow: inset 0 0 0 4px #10150d;
+    }
+    .cam-disparo:active { transform: scale(.92); }
+    .cam-disparo:disabled { opacity: .4; }
+    .cam-base.revisao > * { flex: 1; min-height: 54px; }
+    .cam-base .botao-linha { background: transparent; color: #f4ead3; border-color: rgba(255, 255, 255, .3); }
+
     .frase-final { text-align: center; margin: 2.2rem 0 0; font-family: var(--fonte-script); font-size: 1.6rem; line-height: 1.3; color: var(--ouro); }
     .rodape { text-align: center; margin-top: 1.2rem; font-size: .8rem; color: var(--texto-3); display: flex; align-items: center; justify-content: center; gap: .4rem; }
     .rodape .ic { width: 14px; height: 14px; }
@@ -263,6 +306,7 @@
   <symbol id="i-imagem" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2.5"/><circle cx="9" cy="10" r="1.8"/><path d="M21 16l-5-5-9 9"/></symbol>
   <symbol id="i-video" viewBox="0 0 24 24"><rect x="3" y="6" width="13" height="12" rx="2.5"/><path d="M16 10.5l5-3v9l-5-3"/></symbol>
   <symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5.5v13l10.5-6.5z" fill="currentColor"/></symbol>
+  <symbol id="i-virar" viewBox="0 0 24 24"><path d="M4.5 10a7.5 7.5 0 0 1 13.4-3.6M19.5 4v4h-4M19.5 14a7.5 7.5 0 0 1-13.4 3.6M4.5 20v-4h4"/></symbol>
   <symbol id="i-cadeado" viewBox="0 0 24 24"><rect x="5" y="10.5" width="14" height="9.5" rx="2"/><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5"/></symbol>
 </svg>
 
@@ -308,13 +352,17 @@
       </div>
 
       <input type="file" id="entrada" accept="image/*" multiple>
+      <input type="file" id="entrada-camera" accept="image/*" capture="environment" hidden>
 
       <!-- Nada selecionado -->
-      <div class="zona" id="zona" role="button" tabindex="0">
+      <div class="zona" id="zona">
         <div class="circulo"><svg class="ic"><use href="#i-camera"/></svg></div>
-        <strong id="zona-titulo">Selecione suas fotos</strong>
-        <span>Você pode escolher várias de uma vez</span>
-        <span class="botao" aria-hidden="true"><svg class="ic"><use href="#i-imagem"/></svg>Escolher da galeria</span>
+        <strong id="zona-titulo">Registre este momento</strong>
+        <span>Tire uma foto agora ou escolha várias da galeria</span>
+        <div class="zona-botoes">
+          <button type="button" class="botao" id="btn-camera"><svg class="ic"><use href="#i-camera"/></svg>Tirar foto</button>
+          <button type="button" class="botao-linha" id="btn-galeria"><svg class="ic"><use href="#i-imagem"/></svg>Compartilhar da galeria</button>
+        </div>
       </div>
 
       <!-- Com arquivos selecionados -->
@@ -324,7 +372,10 @@
             <strong id="contagem"></strong>
             <span class="fraco" id="tamanho"></span>
           </div>
-          <button type="button" class="botao-linha" id="adicionar"><svg class="ic"><use href="#i-mais"/></svg>Adicionar</button>
+          <div class="mais-botoes">
+            <button type="button" class="botao-linha" id="adicionar-camera" aria-label="Tirar foto"><svg class="ic"><use href="#i-camera"/></svg></button>
+            <button type="button" class="botao-linha" id="adicionar"><svg class="ic"><use href="#i-mais"/></svg>Galeria</button>
+          </div>
         </div>
 
         <div class="miniaturas" id="miniaturas"></div>
@@ -363,6 +414,32 @@
   <p class="frase-final">“Toda grande jornada começa<br>com um simples embarque.”</p>
   <p class="rodape"><svg class="ic"><use href="#i-cadeado"/></svg>Suas fotos são enviadas apenas para os noivos.</p>
 </main>
+
+<!-- Câmera do site, com filtro do casamento -->
+<div class="camera" id="camera" hidden role="dialog" aria-label="Câmera">
+  <div class="cam-topo">
+    <button type="button" class="cam-btn" id="cam-fechar" aria-label="Fechar câmera"><svg class="ic"><use href="#i-x"/></svg></button>
+    <button type="button" class="cam-filtro ativo" id="cam-filtro" aria-pressed="true"><span class="chave"></span>Filtro do casamento</button>
+  </div>
+  <div class="cam-palco" id="cam-palco">
+    <video id="cam-video" playsinline muted autoplay></video>
+    <img id="cam-previa" alt="Foto tirada" hidden>
+    <canvas id="cam-moldura"></canvas>
+    <div class="cam-erro" id="cam-erro" hidden>
+      <p>Não foi possível abrir a câmera aqui. Verifique se o navegador tem permissão para usar a câmera, ou use a câmera do celular.</p>
+      <button type="button" class="botao" id="cam-nativa"><svg class="ic"><use href="#i-camera"/></svg>Abrir câmera do celular</button>
+    </div>
+  </div>
+  <div class="cam-base" id="cam-base-captura">
+    <span class="cam-espaco"></span>
+    <button type="button" class="cam-disparo" id="cam-disparar" aria-label="Tirar foto"></button>
+    <button type="button" class="cam-btn" id="cam-virar" aria-label="Virar câmera"><svg class="ic"><use href="#i-virar"/></svg></button>
+  </div>
+  <div class="cam-base revisao" id="cam-base-revisao" hidden>
+    <button type="button" class="botao-linha" id="cam-outra">Tirar outra</button>
+    <button type="button" class="botao" id="cam-usar"><svg class="ic"><use href="#i-check"/></svg>Usar foto</button>
+  </div>
+</div>
 
 <script>
 (() => {
@@ -567,6 +644,7 @@
       : `Enviar ${p} ${p === 1 ? 'arquivo' : 'arquivos'}`;
     $('enviar').disabled = enviando || p === 0;
     $('adicionar').disabled = enviando;
+    $('adicionar-camera').disabled = enviando;
     $('limpar').hidden = enviando;
     $('passo-envio').classList.toggle('enviando-tudo', enviando);
   }
@@ -696,13 +774,15 @@
 
   // ---------- Eventos ----------
   const abrirSeletor = () => !enviando && $('entrada').click();
-  $('zona').addEventListener('click', abrirSeletor);
-  $('zona').addEventListener('keydown', (e) => (e.key === 'Enter' || e.key === ' ') && (e.preventDefault(), abrirSeletor()));
+  $('btn-galeria').addEventListener('click', abrirSeletor);
   $('adicionar').addEventListener('click', abrirSeletor);
+  $('btn-camera').addEventListener('click', () => abrirCamera());
+  $('adicionar-camera').addEventListener('click', () => abrirCamera());
+  $('entrada-camera').addEventListener('change', (e) => { adicionar([...e.target.files]); e.target.value = ''; });
   $('entrada').addEventListener('change', (e) => { adicionar([...e.target.files]); e.target.value = ''; });
   $('enviar').addEventListener('click', enviarTodos);
   $('limpar').addEventListener('click', () => !enviando && limpar());
-  $('mais-fotos').addEventListener('click', () => { $('concluido').hidden = true; atualizar(); abrirSeletor(); });
+  $('mais-fotos').addEventListener('click', () => { $('concluido').hidden = true; atualizar(); });
 
   // Arrastar e soltar (computador)
   ['dragenter', 'dragover'].forEach((t) => $('zona').addEventListener(t, (e) => { e.preventDefault(); $('zona').classList.add('arrastando'); }));
@@ -742,7 +822,6 @@
     document.title = `${ev.noivos} • Compartilhe suas fotos`;
     if (ev.aceitarVideos) {
       $('entrada').accept = 'image/*,video/*';
-      $('zona-titulo').textContent = 'Selecione suas fotos e vídeos';
     }
     if (ev.capaUrl) {
       $('foto-casal').src = ev.capaUrl;
@@ -785,6 +864,200 @@
     }
     $('barras').innerHTML = svg;
   }
+
+  // ---------- Câmera do site com filtro do casamento ----------
+  const AVIAO = 'M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5z';
+  let fluxo = null;              // MediaStream ativo
+  let modoCamera = 'environment';
+  let filtroAtivo = true;
+  let fotoTirada = null;         // { file, url }
+
+  async function carregarFontesFiltro() {
+    if (!document.fonts) return;
+    const texto = (evento.noivos || '') + (evento.hashtag || '#EuFui') + (evento.data || '');
+    try {
+      await Promise.all([document.fonts.load('40px Parisienne', texto), document.fonts.load('40px "Libre Caslon Text"', texto)]);
+    } catch {}
+  }
+
+  // Desenha a moldura do casamento num canvas de tamanho W x H (mesma arte na prévia e na foto)
+  function desenharMoldura(ctx, W, H) {
+    const u = Math.min(W, H * 0.75);
+    const ouro = ctx.createLinearGradient(0, 0, W, H);
+    ouro.addColorStop(0, '#ecd6a2'); ouro.addColorStop(0.5, '#c9a463'); ouro.addColorStop(1, '#a07c42');
+    ctx.save();
+
+    // faixas escuras em cima e embaixo, para o texto aparecer em qualquer foto
+    let g = ctx.createLinearGradient(0, 0, 0, H * 0.26);
+    g.addColorStop(0, 'rgba(30, 40, 24, .9)'); g.addColorStop(0.55, 'rgba(30, 40, 24, .5)'); g.addColorStop(1, 'rgba(30, 40, 24, 0)');
+    ctx.fillStyle = g; ctx.fillRect(0, 0, W, H * 0.26);
+    g = ctx.createLinearGradient(0, H, 0, H * 0.72);
+    g.addColorStop(0, 'rgba(30, 40, 24, .92)'); g.addColorStop(0.5, 'rgba(30, 40, 24, .55)'); g.addColorStop(1, 'rgba(30, 40, 24, 0)');
+    ctx.fillStyle = g; ctx.fillRect(0, H * 0.72, W, H * 0.28);
+
+    // moldura dourada dupla
+    const m = u * 0.04;
+    ctx.strokeStyle = ouro;
+    ctx.lineWidth = u * 0.007;
+    ctx.beginPath(); ctx.roundRect(m, m, W - 2 * m, H - 2 * m, u * 0.03); ctx.stroke();
+    ctx.globalAlpha = 0.7; ctx.lineWidth = u * 0.0025;
+    const m2 = m + u * 0.014;
+    ctx.beginPath(); ctx.roundRect(m2, m2, W - 2 * m2, H - 2 * m2, u * 0.022); ctx.stroke();
+    ctx.globalAlpha = 1;
+
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'alphabetic';
+    ctx.fillStyle = ouro;
+    ctx.shadowColor = 'rgba(0, 0, 0, .35)';
+    ctx.shadowBlur = u * 0.012;
+    const espacar = (px) => { if ('letterSpacing' in ctx) ctx.letterSpacing = px + 'px'; };
+
+    // nomes no topo
+    let tam = u * 0.12;
+    ctx.font = `${tam}px Parisienne`;
+    const nomes = evento.noivos || '';
+    while (ctx.measureText(nomes).width > W * 0.8 && tam > 10) { tam -= 1; ctx.font = `${tam}px Parisienne`; }
+    ctx.fillText(nomes, W / 2, m + u * 0.165);
+
+    // data
+    espacar(u * 0.008);
+    ctx.font = `${u * 0.032}px "Libre Caslon Text"`;
+    ctx.fillText(String(evento.data || '').toUpperCase(), W / 2, m + u * 0.23);
+
+    // embaixo: trilha com avião + hashtag
+    const yLinha = H - m - u * 0.19;
+    ctx.shadowBlur = 0;
+    ctx.strokeStyle = ouro; ctx.lineWidth = u * 0.004; ctx.setLineDash([u * 0.014, u * 0.012]);
+    ctx.beginPath(); ctx.moveTo(W / 2 - u * 0.2, yLinha); ctx.lineTo(W / 2 - u * 0.05, yLinha);
+    ctx.moveTo(W / 2 + u * 0.05, yLinha); ctx.lineTo(W / 2 + u * 0.2, yLinha); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.save();
+    const esc = u * 0.003;
+    ctx.translate(W / 2, yLinha); ctx.rotate(Math.PI / 2); ctx.scale(esc, esc); ctx.translate(-12, -12);
+    ctx.fill(new Path2D(AVIAO));
+    ctx.restore();
+
+    ctx.shadowBlur = u * 0.012;
+    espacar(u * 0.012);
+    ctx.font = `${u * 0.085}px "Libre Caslon Text"`;
+    ctx.fillText(evento.hashtag || '#EuFui', W / 2, H - m - u * 0.075);
+    espacar(0);
+    ctx.restore();
+  }
+
+  function atualizarPreviaMoldura() {
+    const c = $('cam-moldura');
+    const palco = $('cam-palco');
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    c.width = Math.round(palco.clientWidth * dpr);
+    c.height = Math.round(palco.clientHeight * dpr);
+    const ctx = c.getContext('2d');
+    ctx.clearRect(0, 0, c.width, c.height);
+    if (filtroAtivo) desenharMoldura(ctx, c.width, c.height);
+  }
+
+  function pararFluxo() {
+    if (fluxo) fluxo.getTracks().forEach((t) => t.stop());
+    fluxo = null;
+    $('cam-video').srcObject = null;
+  }
+
+  async function iniciarFluxo() {
+    pararFluxo();
+    $('cam-erro').hidden = true;
+    $('cam-disparar').disabled = true;
+    try {
+      fluxo = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: { ideal: modoCamera }, width: { ideal: 1920 }, height: { ideal: 1920 } },
+        audio: false,
+      });
+      const v = $('cam-video');
+      v.srcObject = fluxo;
+      v.classList.toggle('espelho', modoCamera === 'user');
+      await v.play();
+      $('cam-disparar').disabled = false;
+    } catch {
+      pararFluxo();
+      $('cam-erro').hidden = false;
+    }
+  }
+
+  function modoCaptura() {
+    if (fotoTirada) { URL.revokeObjectURL(fotoTirada.url); fotoTirada = null; }
+    $('cam-previa').hidden = true;
+    $('cam-video').hidden = false;
+    $('cam-moldura').hidden = !filtroAtivo;
+    $('cam-base-captura').hidden = false;
+    $('cam-base-revisao').hidden = true;
+  }
+
+  async function abrirCamera() {
+    if (enviando) return;
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) return $('entrada-camera').click();
+    $('camera').hidden = false;
+    document.documentElement.classList.add('travado');
+    modoCaptura();
+    await carregarFontesFiltro();
+    atualizarPreviaMoldura();
+    iniciarFluxo();
+  }
+
+  function fecharCamera() {
+    pararFluxo();
+    modoCaptura();
+    $('camera').hidden = true;
+    document.documentElement.classList.remove('travado');
+  }
+
+  async function tirarFoto() {
+    const v = $('cam-video');
+    if (!v.videoWidth) return;
+    const palco = $('cam-palco');
+    // recorta do vídeo exatamente a parte que aparece na tela
+    const vw = v.videoWidth, vh = v.videoHeight;
+    const esc = Math.max(palco.clientWidth / vw, palco.clientHeight / vh);
+    const cw = Math.round(palco.clientWidth / esc), ch = Math.round(palco.clientHeight / esc);
+    const sx = (vw - cw) / 2, sy = (vh - ch) / 2;
+    const c = document.createElement('canvas');
+    c.width = cw; c.height = ch;
+    const ctx = c.getContext('2d');
+    if (modoCamera === 'user') { ctx.translate(cw, 0); ctx.scale(-1, 1); }
+    ctx.drawImage(v, sx, sy, cw, ch, 0, 0, cw, ch);
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    if (filtroAtivo) desenharMoldura(ctx, cw, ch);
+
+    palco.classList.remove('flash'); void palco.offsetWidth; palco.classList.add('flash');
+    const blob = await new Promise((res) => c.toBlob(res, 'image/jpeg', 0.92));
+    if (!blob) return;
+    const file = new File([blob], `foto-casamento-${Date.now()}.jpg`, { type: 'image/jpeg', lastModified: Date.now() });
+    fotoTirada = { file, url: URL.createObjectURL(blob) };
+    $('cam-previa').src = fotoTirada.url;
+    $('cam-previa').hidden = false;
+    $('cam-video').hidden = true;
+    $('cam-moldura').hidden = true;
+    $('cam-base-captura').hidden = true;
+    $('cam-base-revisao').hidden = false;
+  }
+
+  $('cam-fechar').addEventListener('click', fecharCamera);
+  $('cam-disparar').addEventListener('click', tirarFoto);
+  $('cam-virar').addEventListener('click', () => { modoCamera = modoCamera === 'user' ? 'environment' : 'user'; iniciarFluxo(); });
+  $('cam-filtro').addEventListener('click', () => {
+    filtroAtivo = !filtroAtivo;
+    $('cam-filtro').classList.toggle('ativo', filtroAtivo);
+    $('cam-filtro').setAttribute('aria-pressed', String(filtroAtivo));
+    if ($('cam-previa').hidden) $('cam-moldura').hidden = !filtroAtivo;
+    atualizarPreviaMoldura();
+  });
+  $('cam-outra').addEventListener('click', modoCaptura);
+  $('cam-usar').addEventListener('click', () => {
+    if (!fotoTirada) return;
+    const file = fotoTirada.file;
+    fecharCamera();
+    adicionar([file]);
+  });
+  $('cam-nativa').addEventListener('click', () => { fecharCamera(); $('entrada-camera').click(); });
+  window.addEventListener('resize', () => { if (!$('camera').hidden) atualizarPreviaMoldura(); });
 
   mostrarPasso();
   atualizar();
