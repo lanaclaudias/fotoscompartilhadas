@@ -255,7 +255,8 @@
     }
     .cam-disparo:active { transform: scale(.92); }
     .cam-disparo:disabled { opacity: .4; }
-    .cam-base.revisao > * { flex: 1; min-height: 54px; }
+    .cam-base.revisao > .botao, .cam-base.revisao > .botao-linha { flex: 1; min-height: 54px; }
+    .cam-base.revisao > .cam-btn { width: 54px; height: 54px; }
     .cam-base .botao-linha { background: transparent; color: #f4ead3; border-color: rgba(255, 255, 255, .3); }
 
     .frase-final { text-align: center; margin: 2.2rem 0 0; font-family: var(--fonte-script); font-size: 1.6rem; line-height: 1.3; color: var(--ouro); }
@@ -307,6 +308,7 @@
   <symbol id="i-video" viewBox="0 0 24 24"><rect x="3" y="6" width="13" height="12" rx="2.5"/><path d="M16 10.5l5-3v9l-5-3"/></symbol>
   <symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5.5v13l10.5-6.5z" fill="currentColor"/></symbol>
   <symbol id="i-virar" viewBox="0 0 24 24"><path d="M4.5 10a7.5 7.5 0 0 1 13.4-3.6M19.5 4v4h-4M19.5 14a7.5 7.5 0 0 1-13.4 3.6M4.5 20v-4h4"/></symbol>
+  <symbol id="i-baixar" viewBox="0 0 24 24"><path d="M12 4v12M7 11l5 5 5-5"/><path d="M4 16v2.5A1.5 1.5 0 0 0 5.5 20h13a1.5 1.5 0 0 0 1.5-1.5V16"/></symbol>
   <symbol id="i-cadeado" viewBox="0 0 24 24"><rect x="5" y="10.5" width="14" height="9.5" rx="2"/><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5"/></symbol>
 </svg>
 
@@ -437,6 +439,7 @@
   </div>
   <div class="cam-base revisao" id="cam-base-revisao" hidden>
     <button type="button" class="botao-linha" id="cam-outra">Tirar outra</button>
+    <button type="button" class="cam-btn" id="cam-baixar" aria-label="Baixar foto" title="Baixar foto"><svg class="ic"><use href="#i-baixar"/></svg></button>
     <button type="button" class="botao" id="cam-usar"><svg class="ic"><use href="#i-check"/></svg>Usar foto</button>
   </div>
 </div>
@@ -1050,6 +1053,19 @@
     atualizarPreviaMoldura();
   });
   $('cam-outra').addEventListener('click', modoCaptura);
+  // Baixar a foto com filtro: no celular abre "Salvar imagem"; no computador baixa o arquivo
+  $('cam-baixar').addEventListener('click', async () => {
+    if (!fotoTirada) return;
+    const { file, url } = fotoTirada;
+    const celular = window.matchMedia('(pointer: coarse)').matches;
+    if (celular && navigator.canShare && navigator.canShare({ files: [file] })) {
+      try { await navigator.share({ files: [file], title: evento.noivos || 'Foto do casamento' }); return; }
+      catch (e) { if (e.name === 'AbortError') return; }
+    }
+    const a = document.createElement('a');
+    a.href = url; a.download = file.name;
+    document.body.appendChild(a); a.click(); a.remove();
+  });
   $('cam-usar').addEventListener('click', () => {
     if (!fotoTirada) return;
     const file = fotoTirada.file;
