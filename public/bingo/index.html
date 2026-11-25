@@ -1,0 +1,571 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#33422a">
+  <title>Bingo do casamento</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&family=Parisienne&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/estilo.css">
+  <style>
+    body {
+      font-family: var(--fonte-titulo); font-size: 15.5px; min-height: 100vh;
+      background: radial-gradient(900px 520px at 50% -160px, #efe6d2, transparent 70%), var(--papel);
+    }
+    .pagina { max-width: 560px; margin: 0 auto; padding: max(1.8rem, env(safe-area-inset-top)) 1.1rem 3rem; }
+
+    /* ---------- Topo ---------- */
+    .topo { text-align: center; }
+    .topo .nomes { margin: 0; font-family: var(--fonte-script); font-size: clamp(1.7rem, 8vw, 2.3rem); line-height: 1.3; color: var(--verde); white-space: nowrap; }
+    .topo .nomes .e { color: var(--ouro); padding: 0 .08em; }
+    .letras { display: flex; justify-content: center; gap: .45rem; margin: .7rem 0 .2rem; }
+    .letras span {
+      width: 2.6rem; height: 2.6rem; border-radius: 50%; display: grid; place-items: center;
+      background: var(--gradiente-verde); color: var(--ouro-claro); font-family: var(--fonte-caps); font-weight: 700; font-size: 1.2rem;
+      box-shadow: 0 6px 14px rgba(35, 46, 28, .22), inset 0 0 0 1px rgba(217, 191, 140, .5), inset 0 0 0 4px #33422a, inset 0 0 0 5px rgba(217, 191, 140, .35);
+    }
+    .topo .sub { margin: .4rem 0 0; font-family: var(--fonte-caps); font-size: .72rem; letter-spacing: .22em; text-transform: uppercase; color: var(--ouro-escuro); }
+
+    .bloco { margin-top: 1.2rem; padding: 1.25rem; }
+    .bloco h2 { margin: 0 0 .9rem; font-family: var(--fonte-titulo); font-weight: 400; font-size: 1.2rem; color: var(--verde); display: flex; align-items: center; justify-content: space-between; gap: .5rem; }
+    .bloco h2 small { font-family: var(--fonte); font-size: .78rem; color: var(--texto-3); font-weight: 500; }
+
+    /* ---------- Nome ---------- */
+    .form-nome { display: grid; gap: .8rem; }
+    .form-nome label { font-size: 1.02rem; color: var(--verde); }
+    .quem { display: flex; align-items: center; justify-content: center; gap: .4rem; margin-top: .9rem; font-family: var(--fonte); font-size: .88rem; color: var(--texto-2); }
+    .quem strong { color: var(--verde); }
+
+    /* ---------- Número sorteado ---------- */
+    .sorteio { display: grid; grid-template-columns: auto 1fr; gap: 1.1rem; align-items: center; }
+    .bola {
+      width: 112px; height: 112px; border-radius: 50%; display: grid; place-items: center; align-content: center;
+      background: radial-gradient(circle at 35% 30%, #fffaf0, #efe2c4 70%, #d9bf8c);
+      box-shadow: 0 12px 26px rgba(35, 46, 28, .25), inset 0 0 0 5px var(--ouro), inset 0 0 0 7px #fffaf0;
+      color: var(--verde);
+    }
+    .bola .l { font-family: var(--fonte-caps); font-weight: 700; font-size: 1rem; letter-spacing: .1em; color: var(--ouro-escuro); line-height: 1; }
+    .bola .n { font-family: var(--fonte-caps); font-weight: 700; font-size: 2.8rem; line-height: 1; }
+    .bola.vazia .n { font-size: 2rem; color: var(--texto-3); }
+    .bola.nova { animation: pulo .7s cubic-bezier(.3, 1.6, .5, 1); }
+    @keyframes pulo { 0% { transform: scale(.4) rotate(-40deg); opacity: 0; } 100% { transform: none; opacity: 1; } }
+    .sorteio .info p { margin: 0; }
+    .sorteio .conta { font-family: var(--fonte-caps); font-size: .74rem; letter-spacing: .16em; text-transform: uppercase; color: var(--ouro-escuro); }
+    .sorteio .modo { margin-top: .25rem !important; font-size: 1.05rem; color: var(--verde); }
+    .sorteio .ao-vivo { margin-top: .5rem !important; display: inline-flex; align-items: center; gap: .4rem; font-family: var(--fonte); font-size: .78rem; color: var(--texto-3); }
+    .sorteio .ao-vivo::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: #5c9a43; box-shadow: 0 0 0 3px rgba(92, 154, 67, .2); }
+    .sorteio .ao-vivo.off::before { background: var(--erro); box-shadow: 0 0 0 3px rgba(179, 66, 58, .2); }
+    .chips { display: flex; flex-wrap: wrap; gap: .35rem; margin-top: 1rem; }
+    .chips span {
+      min-width: 2.35rem; padding: .3rem .45rem; border-radius: 999px; text-align: center;
+      background: var(--ouro-fundo); border: 1px solid var(--linha); font-family: var(--fonte); font-size: .8rem; font-weight: 600; color: var(--verde);
+    }
+    .chips span b { font-weight: 600; color: var(--ouro-escuro); margin-right: .1rem; }
+
+    /* ---------- Quadro com os 75 números ---------- */
+    .tit-lista { margin: 1.2rem 0 .55rem; font-family: var(--fonte-caps); font-weight: 400; font-size: .72rem; letter-spacing: .18em; text-transform: uppercase; color: var(--ouro-escuro); }
+    .quadro { display: grid; gap: 4px; }
+    .quadro .lin { display: grid; grid-template-columns: 1.3rem repeat(15, 1fr); gap: 3px; align-items: center; }
+    .quadro .let { font-family: var(--fonte-caps); font-weight: 700; font-size: .95rem; color: var(--verde); text-align: center; }
+    .quadro .n {
+      aspect-ratio: 1; display: grid; place-items: center; border-radius: 50%;
+      font-family: var(--fonte); font-weight: 600; font-size: clamp(.52rem, 2.35vw, .74rem); letter-spacing: -.02em;
+      background: var(--fundo-suave); color: #b4ab98; transition: background .3s, color .3s;
+    }
+    .quadro .n.tenho { color: var(--verde); box-shadow: inset 0 0 0 1.5px var(--ouro-claro); background: var(--branco); }
+    .quadro .n.saiu { background: var(--verde-medio); color: #f4ead3; box-shadow: none; }
+    .quadro .n.saiu.tenho { background: var(--gradiente-ouro); color: #fffaf0; }
+    .quadro .n.ultimo { outline: 2px solid var(--verde); outline-offset: 1px; }
+    .legenda { display: flex; flex-wrap: wrap; gap: .3rem .9rem; margin-top: .7rem; font-family: var(--fonte); font-size: .74rem; color: var(--texto-2); }
+    .legenda span { display: inline-flex; align-items: center; gap: .35rem; }
+    .legenda i { width: 12px; height: 12px; border-radius: 50%; display: inline-block; }
+
+    /* ---------- Ganhadores ---------- */
+    .ganhadores {
+      margin-top: 1.2rem; padding: 1.1rem 1.25rem; border-radius: var(--raio); text-align: center; color: #f4ead3;
+      background: var(--gradiente-verde); box-shadow: var(--sombra), inset 0 0 0 1px rgba(217, 191, 140, .5);
+    }
+    .ganhadores .tit { margin: 0; font-family: var(--fonte-caps); font-weight: 700; letter-spacing: .3em; font-size: 1.3rem; color: var(--ouro-claro); }
+    .ganhadores ul { list-style: none; margin: .5rem 0 0; padding: 0; display: grid; gap: .25rem; }
+    .ganhadores li { font-size: 1.05rem; }
+    .ganhadores li small { color: var(--ouro-claro); font-family: var(--fonte); font-size: .78rem; }
+    .ganhadores li.eu { font-weight: 700; }
+
+    /* ---------- Cartela ---------- */
+    .cartelas { display: grid; gap: 1rem; }
+    .cartela { border-radius: 16px; overflow: hidden; background: var(--branco); border: 1px solid var(--linha-forte); box-shadow: var(--sombra-p); }
+    .cartela.ganhou { border-color: var(--ouro); box-shadow: 0 0 0 3px rgba(179, 139, 77, .35), var(--sombra-p); }
+    .cartela .cab { display: grid; grid-template-columns: repeat(5, 1fr); background: var(--gradiente-verde); }
+    .cartela .cab span { text-align: center; padding: .45rem 0; font-family: var(--fonte-caps); font-weight: 700; font-size: 1.15rem; color: var(--ouro-claro); }
+    .cartela .grade { display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; padding: 6px; background: var(--ouro-fundo); }
+    .cartela .cel {
+      position: relative; aspect-ratio: 1; display: grid; place-items: center; border-radius: 9px; background: var(--branco);
+      font-family: var(--fonte); font-weight: 600; font-size: clamp(1rem, 5vw, 1.3rem); color: var(--verde);
+      transition: background .3s, color .3s;
+    }
+    .cartela .cel.marcada { background: var(--gradiente-ouro); color: #fffaf0; box-shadow: inset 0 0 0 2px rgba(255, 250, 240, .45); }
+    .cartela .cel.marcada::after {
+      content: ''; position: absolute; top: 3px; right: 3px; width: 13px; height: 13px; border-radius: 50%;
+      background: var(--verde) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M6 12.5l4 4L18 8' fill='none' stroke='%23f4ead3' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / 9px no-repeat;
+    }
+    .cartela .cel.marcada.recente { animation: carimbo .5s ease; }
+    @keyframes carimbo { 0% { transform: scale(1.35); } 100% { transform: none; } }
+    .cartela .cel.livre { background: var(--verde); color: var(--ouro-claro); }
+    .cartela .cel.livre .ic { width: 55%; height: 55%; fill: currentColor; stroke: none; }
+    .cartela .rodape { display: flex; align-items: center; justify-content: space-between; gap: .5rem; padding: .55rem .8rem; font-family: var(--fonte); font-size: .82rem; color: var(--texto-2); }
+    .cartela .rodape strong { font-family: var(--fonte-caps); color: var(--verde); font-size: .88rem; }
+    .cartela .falta { color: var(--ouro-escuro); font-weight: 600; }
+    .cartela.ganhou .falta { color: var(--ok); }
+    .vazio { margin: 0; text-align: center; color: var(--texto-3); font-size: .95rem; }
+
+    /* ---------- Compra ---------- */
+    .qtd { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: .8rem 1rem; border-radius: 14px; background: var(--ouro-fundo); border: 1px solid var(--linha); }
+    .qtd .rot { font-size: .98rem; color: var(--verde); }
+    .qtd .rot small { display: block; font-family: var(--fonte); font-size: .78rem; color: var(--texto-3); }
+    .passo { display: flex; align-items: center; gap: .6rem; }
+    .passo button { width: 38px; height: 38px; border-radius: 50%; border: 1px solid var(--linha-forte); background: var(--branco); cursor: pointer; display: grid; place-items: center; color: var(--verde); }
+    .passo button:disabled { opacity: .4; cursor: default; }
+    .passo output { min-width: 1.6rem; text-align: center; font-family: var(--fonte-caps); font-weight: 700; font-size: 1.3rem; color: var(--verde); }
+    .previas { display: grid; gap: 1rem; margin-top: 1rem; }
+    .previas .cartela { opacity: .9; border-style: dashed; }
+    .previas .cartela .rodape { padding: .4rem .5rem .4rem .8rem; }
+    .previas .cartela .rodape strong { color: var(--ouro-escuro); font-family: var(--fonte); font-weight: 600; font-size: .8rem; }
+    .acoes-compra { display: grid; gap: .6rem; margin-top: 1rem; }
+    .acoes-compra .botao { width: 100%; }
+    .total { display: flex; justify-content: space-between; align-items: baseline; font-size: 1.05rem; color: var(--verde); margin-top: 1rem; }
+    .total strong { font-family: var(--fonte-caps); font-size: 1.3rem; }
+    .aviso-teste { margin: .2rem 0 0; text-align: center; font-family: var(--fonte); font-size: .78rem; color: var(--texto-3); }
+    .fechado { display: flex; gap: .6rem; align-items: flex-start; padding: .9rem 1rem; border-radius: 12px; background: var(--ouro-fundo); color: var(--texto-2); font-size: .95rem; }
+    .fechado .ic { color: var(--ouro-escuro); margin-top: .15rem; }
+    .giro { animation: girar .8s linear infinite; }
+
+    /* ---------- Aviso de bingo ---------- */
+    .alerta {
+      position: fixed; inset: 0; z-index: 50; display: grid; place-items: center; padding: 1.5rem;
+      background: rgba(25, 32, 20, .72); backdrop-filter: blur(4px);
+    }
+    .alerta .caixa {
+      width: min(100%, 380px); padding: 2rem 1.5rem 1.5rem; text-align: center; border-radius: 24px; color: #f4ead3;
+      background: var(--gradiente-verde); box-shadow: 0 30px 80px rgba(0, 0, 0, .4), inset 0 0 0 1px rgba(217, 191, 140, .6), inset 0 0 0 7px #33422a, inset 0 0 0 8px rgba(217, 191, 140, .35);
+      animation: pulo .6s cubic-bezier(.3, 1.6, .5, 1);
+    }
+    .alerta .grito { margin: 0; font-family: var(--fonte-caps); font-weight: 700; font-size: 2.6rem; letter-spacing: .18em; color: var(--ouro-claro); }
+    .alerta .quem-bateu { margin: .6rem 0 0; font-family: var(--fonte-script); font-size: 2rem; line-height: 1.3; color: #fffaf0; }
+    .alerta .det { margin: .4rem 0 1.3rem; font-family: var(--fonte); font-size: .85rem; color: var(--ouro-claro); }
+    .alerta .botao { background: var(--gradiente-ouro); color: var(--verde-escuro); }
+
+    .toast {
+      position: fixed; left: 50%; bottom: max(1.2rem, env(safe-area-inset-bottom)); transform: translateX(-50%); z-index: 60;
+      max-width: calc(100% - 2rem); padding: .75rem 1.1rem; border-radius: 12px; background: var(--verde-escuro); color: #f4ead3;
+      font-family: var(--fonte); font-size: .9rem; box-shadow: 0 10px 30px rgba(0, 0, 0, .25);
+    }
+  </style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-coracao" viewBox="0 0 24 24"><path d="M12 20s-7.5-4.6-7.5-10.2A4.3 4.3 0 0 1 12 7.2a4.3 4.3 0 0 1 7.5 2.6C19.5 15.4 12 20 12 20z"/></symbol>
+  <symbol id="i-mais" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-menos" viewBox="0 0 24 24"><path d="M5 12h14"/></symbol>
+  <symbol id="i-virar" viewBox="0 0 24 24"><path d="M4.5 10a7.5 7.5 0 0 1 13.4-3.6M19.5 4v4h-4M19.5 14a7.5 7.5 0 0 1-13.4 3.6M4.5 20v-4h4"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></symbol>
+  <symbol id="i-cadeado" viewBox="0 0 24 24"><rect x="5" y="10.5" width="14" height="9.5" rx="2"/><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5"/></symbol>
+  <symbol id="i-cartela" viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="17" height="17" rx="2.5"/><path d="M3.5 9.2h17M3.5 14.8h17M9.2 3.5v17M14.8 3.5v17"/></symbol>
+</svg>
+
+<main class="pagina">
+  <header class="topo surgir">
+    <p class="nomes" id="noivos">&nbsp;</p>
+    <div class="letras" aria-label="Bingo"><span>B</span><span>I</span><span>N</span><span>G</span><span>O</span></div>
+    <p class="sub">Bingo do casamento</p>
+    <p class="quem" id="quem" hidden>Jogando como <strong id="nome-atual"></strong> · <button class="botao-texto" id="trocar" type="button">Trocar</button></p>
+  </header>
+
+  <!-- Nome (compartilhado com o site de fotos) -->
+  <form class="cartao bloco form-nome surgir" id="form-nome" hidden>
+    <label for="campo-nome">Para participar, diga seu nome:</label>
+    <input class="campo" id="campo-nome" maxlength="60" placeholder="Seu nome" autocomplete="name" required>
+    <button class="botao" type="submit">Entrar no bingo</button>
+  </form>
+
+  <div id="jogo" hidden>
+    <!-- Ganhadores -->
+    <section class="ganhadores surgir" id="ganhadores" hidden>
+      <p class="tit">BINGO!</p>
+      <ul id="lista-ganhadores"></ul>
+    </section>
+
+    <!-- Último número -->
+    <section class="cartao bloco surgir">
+      <div class="sorteio">
+        <div class="bola vazia" id="bola"><span class="l" id="bola-l"></span><span class="n" id="bola-n">–</span></div>
+        <div class="info">
+          <p class="conta" id="conta">Aguardando o sorteio</p>
+          <p class="modo" id="modo"></p>
+          <p class="ao-vivo" id="ao-vivo">Ao vivo</p>
+        </div>
+      </div>
+      <div class="chips" id="chips"></div>
+      <h3 class="tit-lista">Números chamados</h3>
+      <div class="quadro" id="quadro"></div>
+      <div class="legenda">
+        <span><i style="background:var(--gradiente-ouro)"></i>Chamado e está na sua cartela</span>
+        <span><i style="background:var(--verde-medio)"></i>Chamado</span>
+        <span><i style="background:var(--branco);box-shadow:inset 0 0 0 1.5px var(--ouro-claro)"></i>Na sua cartela</span>
+      </div>
+    </section>
+
+    <!-- Minhas cartelas -->
+    <section class="cartao bloco surgir">
+      <h2>Minhas cartelas <small id="qtd-minhas"></small></h2>
+      <div class="cartelas" id="minhas"></div>
+      <p class="vazio" id="sem-cartelas">Você ainda não tem cartelas. Compre abaixo!</p>
+    </section>
+
+    <!-- Compra -->
+    <section class="cartao bloco surgir" id="compra">
+      <h2>Comprar cartelas</h2>
+      <div class="fechado" id="vendas-fechadas" hidden><svg class="ic"><use href="#i-cadeado"/></svg><span id="txt-fechadas">A rodada já começou. As vendas abrem de novo na próxima rodada.</span></div>
+      <div id="vendas-abertas">
+        <div class="qtd">
+          <span class="rot">Quantidade<small id="preco-un"></small></span>
+          <div class="passo">
+            <button type="button" id="menos" aria-label="Menos uma"><svg class="ic"><use href="#i-menos"/></svg></button>
+            <output id="qtd">1</output>
+            <button type="button" id="mais" aria-label="Mais uma"><svg class="ic"><use href="#i-mais"/></svg></button>
+          </div>
+        </div>
+        <div id="area-previas" hidden>
+          <p class="aviso-teste" style="margin-top:1rem">Não gostou dos números? Toque em <strong>Trocar</strong> para gerar outra cartela.</p>
+          <div class="previas" id="previas"></div>
+          <div class="total"><span>Total</span><strong id="total"></strong></div>
+          <div class="acoes-compra">
+            <button class="botao" type="button" id="confirmar"><svg class="ic"><use href="#i-check"/></svg>Confirmar compra</button>
+            <button class="botao-linha" type="button" id="gerar-todas"><svg class="ic"><use href="#i-virar"/></svg>Trocar todas</button>
+          </div>
+          <p class="aviso-teste" id="aviso-teste"></p>
+        </div>
+        <div class="acoes-compra" id="area-gerar">
+          <button class="botao" type="button" id="gerar"><svg class="ic"><use href="#i-cartela"/></svg>Gerar minhas cartelas</button>
+        </div>
+      </div>
+    </section>
+  </div>
+</main>
+
+<div class="alerta" id="alerta" hidden>
+  <div class="caixa" role="alertdialog" aria-labelledby="alerta-grito">
+    <p class="grito" id="alerta-grito">BINGO!</p>
+    <p class="quem-bateu" id="alerta-nomes"></p>
+    <p class="det" id="alerta-det"></p>
+    <button class="botao" type="button" id="alerta-ok">Oba!</button>
+  </div>
+</div>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+(() => {
+  const $ = (id) => document.getElementById(id);
+  const LETRAS = 'BINGO';
+  const letra = (n) => LETRAS[Math.floor((n - 1) / 15)];
+  const LINHAS = [];
+  for (let i = 0; i < 5; i++) { LINHAS.push([0, 1, 2, 3, 4].map((j) => i * 5 + j)); LINHAS.push([0, 1, 2, 3, 4].map((j) => j * 5 + i)); }
+  LINHAS.push([0, 6, 12, 18, 24], [4, 8, 12, 16, 20]);
+  const reais = (v) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+
+  let convidadoId = localStorage.getItem('convidadoId');
+  if (!convidadoId) {
+    convidadoId = crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2);
+    localStorage.setItem('convidadoId', convidadoId);
+  }
+
+  // Quadro B I N G O × 15
+  const celQuadro = {};
+  for (let c = 0; c < 5; c++) {
+    const lin = document.createElement('div'); lin.className = 'lin';
+    const l = document.createElement('span'); l.className = 'let'; l.textContent = LETRAS[c]; lin.appendChild(l);
+    for (let n = c * 15 + 1; n <= c * 15 + 15; n++) {
+      const x = document.createElement('span'); x.className = 'n'; x.textContent = n;
+      celQuadro[n] = x; lin.appendChild(x);
+    }
+    document.getElementById('quadro').appendChild(lin);
+  }
+  function atualizarQuadro() {
+    const s = estado ? estado.sorteados : [];
+    const saiu = new Set(s);
+    const tenho = new Set(minhas.flatMap((c) => c.numeros));
+    const ultimo = s[s.length - 1];
+    for (let n = 1; n <= 75; n++) {
+      celQuadro[n].classList.toggle('saiu', saiu.has(n));
+      celQuadro[n].classList.toggle('tenho', tenho.has(n));
+      celQuadro[n].classList.toggle('ultimo', n === ultimo);
+    }
+  }
+
+  let estado = null;        // último /api/bingo/estado
+  let minhas = [];          // cartelas compradas
+  let previas = [];         // cartelas geradas, ainda não compradas
+  let qtd = 1;
+
+  function toast(msg, ms = 3500) {
+    const t = $('toast'); t.textContent = msg; t.hidden = false;
+    clearTimeout(toast.t); toast.t = setTimeout(() => { t.hidden = true; }, ms);
+  }
+
+  async function api(url, corpo) {
+    const r = await fetch(url, corpo ? { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(corpo) } : {});
+    const d = await r.json().catch(() => ({}));
+    if (!r.ok) throw new Error(d.erro || 'Falha de conexão');
+    return d;
+  }
+
+  // ---------- Nome ----------
+  function mostrarTela() {
+    const nome = localStorage.getItem('convidadoNome');
+    $('form-nome').hidden = !!nome;
+    $('jogo').hidden = !nome;
+    $('quem').hidden = !nome;
+    if (nome) $('nome-atual').textContent = nome;
+  }
+  $('form-nome').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const nome = $('campo-nome').value.trim();
+    if (!nome) return;
+    localStorage.setItem('convidadoNome', nome);
+    $('campo-nome').blur();
+    mostrarTela();
+  });
+  $('trocar').addEventListener('click', () => {
+    localStorage.removeItem('convidadoNome');
+    mostrarTela();
+    $('campo-nome').focus();
+  });
+
+  // ---------- Cartela ----------
+  function faltam(numeros, sorteados, modo) {
+    const ok = (i) => i === 12 || sorteados.has(numeros[i]);
+    if (modo === 'linha') return Math.min(...LINHAS.map((l) => l.filter((i) => !ok(i)).length));
+    return numeros.filter((_, i) => !ok(i)).length;
+  }
+
+  function desenharCartela(c, { sorteados = new Set(), recente = null, modo = 'cheia', ganhou = false, acao = null } = {}) {
+    const el = document.createElement('div');
+    el.className = 'cartela' + (ganhou ? ' ganhou' : '');
+    const cab = document.createElement('div'); cab.className = 'cab';
+    for (const l of LETRAS) { const s = document.createElement('span'); s.textContent = l; cab.appendChild(s); }
+    const grade = document.createElement('div'); grade.className = 'grade';
+    c.numeros.forEach((n, i) => {
+      const cel = document.createElement('div');
+      if (i === 12) {
+        cel.className = 'cel livre';
+        cel.innerHTML = '<svg class="ic" aria-label="Livre"><use href="#i-coracao"/></svg>';
+      } else {
+        cel.className = 'cel' + (sorteados.has(n) ? ' marcada' : '') + (n === recente ? ' recente' : '');
+        cel.textContent = n;
+      }
+      grade.appendChild(cel);
+    });
+    const rod = document.createElement('div'); rod.className = 'rodape';
+    const tit = document.createElement('strong');
+    tit.textContent = c.numero ? `Cartela nº ${c.numero}` : 'Ainda não confirmada';
+    rod.appendChild(tit);
+    if (acao) rod.appendChild(acao);
+    else {
+      const f = faltam(c.numeros, sorteados, modo);
+      const s = document.createElement('span'); s.className = 'falta';
+      s.textContent = ganhou ? 'BINGO!' : sorteados.size ? `falta${f > 1 ? 'm' : ''} ${f}` : '';
+      rod.appendChild(s);
+    }
+    el.append(cab, grade, rod);
+    return el;
+  }
+
+  function desenharMinhas(recente) {
+    const sorteados = new Set(estado ? estado.sorteados : []);
+    const modo = estado ? estado.modo : 'cheia';
+    const venc = new Set((estado ? estado.ganhadores : []).map((g) => g.id));
+    const lista = $('minhas'); lista.innerHTML = '';
+    minhas.forEach((c) => lista.appendChild(desenharCartela(c, { sorteados, recente, modo, ganhou: venc.has(c.id) })));
+    $('sem-cartelas').hidden = minhas.length > 0;
+    atualizarQuadro();
+    $('qtd-minhas').textContent = minhas.length ? `${minhas.length} cartela${minhas.length > 1 ? 's' : ''}` : '';
+  }
+
+  // ---------- Estado ao vivo ----------
+  const vistos = JSON.parse(localStorage.getItem('bingoVistos') || '[]');
+
+  function aplicarEstado(novo) {
+    const antes = estado;
+    estado = novo;
+    const s = novo.sorteados;
+    const ultimo = s[s.length - 1];
+    const mudouNumero = !antes || antes.rodada !== novo.rodada || antes.sorteados.join() !== s.join();
+
+    if (mudouNumero) {
+      const bola = $('bola');
+      bola.classList.toggle('vazia', !ultimo);
+      $('bola-l').textContent = ultimo ? letra(ultimo) : '';
+      $('bola-n').textContent = ultimo || '–';
+      if (antes && ultimo && ultimo !== antes.sorteados[antes.sorteados.length - 1]) {
+        bola.classList.remove('nova'); void bola.offsetWidth; bola.classList.add('nova');
+        if (navigator.vibrate) navigator.vibrate(60);
+      }
+      $('conta').textContent = s.length ? `${s.length} de 75 números` : 'Aguardando o sorteio';
+      const chips = $('chips'); chips.innerHTML = '';
+      [...s].reverse().slice(0, 8).forEach((n) => { const c = document.createElement('span'); c.innerHTML = `<b>${letra(n)}</b>${n}`; chips.appendChild(c); });
+    }
+    atualizarQuadro();
+    $('modo').textContent = `Rodada ${novo.rodada || 1} · ${novo.modo === 'linha' ? 'vale uma linha' : 'cartela cheia'}`;
+
+    // Ganhadores
+    const meus = new Set(minhas.map((c) => c.id));
+    const g = novo.ganhadores || [];
+    $('ganhadores').hidden = !g.length;
+    $('lista-ganhadores').innerHTML = '';
+    g.forEach((x) => {
+      const li = document.createElement('li');
+      if (meus.has(x.id)) li.className = 'eu';
+      li.textContent = `${x.nome} `;
+      const sm = document.createElement('small'); sm.textContent = `cartela nº ${x.numero}`;
+      li.appendChild(sm);
+      $('lista-ganhadores').appendChild(li);
+    });
+    const novos = g.filter((x) => !vistos.includes(`${novo.rodada}:${x.id}`));
+    if (novos.length) {
+      novos.forEach((x) => vistos.push(`${novo.rodada}:${x.id}`));
+      localStorage.setItem('bingoVistos', JSON.stringify(vistos.slice(-200)));
+      if (antes) mostrarAlerta(novos, meus);
+    }
+
+    // Vendas
+    $('vendas-fechadas').hidden = novo.vendasAbertas;
+    $('txt-fechadas').textContent = previas.length && !novo.vendasAbertas
+      ? 'A rodada começou antes de você confirmar, então essas cartelas não valem para esta rodada. As vendas abrem de novo na próxima.'
+      : 'A rodada já começou. As vendas abrem de novo na próxima rodada.';
+    $('vendas-abertas').hidden = !novo.vendasAbertas;
+    $('preco-un').textContent = novo.preco ? `${reais(novo.preco)} cada` : '';
+    $('aviso-teste').textContent = novo.pagamento === 'teste' ? 'Modo de teste: a compra é confirmada sem pagamento.' : '';
+    atualizarTotal();
+
+    if (mudouNumero || (antes && antes.ganhadores.length !== g.length)) desenharMinhas(mudouNumero ? ultimo : null);
+  }
+
+  function mostrarAlerta(novos, meus) {
+    const minha = novos.some((x) => meus.has(x.id));
+    $('alerta-grito').textContent = 'BINGO!';
+    $('alerta-nomes').textContent = minha ? 'Você bateu o bingo!' : novos.map((x) => x.nome).join(' e ');
+    $('alerta-det').textContent = minha
+      ? 'Procure a equipe do bingo para receber seu prêmio.'
+      : novos.map((x) => `cartela nº ${x.numero}`).join(' · ');
+    $('alerta').hidden = false;
+    if (navigator.vibrate) navigator.vibrate([120, 80, 120, 80, 240]);
+  }
+  $('alerta-ok').addEventListener('click', () => { $('alerta').hidden = true; });
+
+  let falhas = 0;
+  async function buscarEstado() {
+    try {
+      aplicarEstado(await api('/api/bingo/estado'));
+      falhas = 0;
+    } catch (e) {
+      if (++falhas === 3) toast(e.message);
+    }
+    $('ao-vivo').classList.toggle('off', falhas >= 2);
+    $('ao-vivo').textContent = falhas >= 2 ? 'Reconectando…' : 'Ao vivo';
+  }
+
+  async function buscarMinhas() {
+    try {
+      minhas = (await api(`/api/bingo/cartelas?convidadoId=${encodeURIComponent(convidadoId)}`)).cartelas;
+      desenharMinhas();
+    } catch (e) { toast(e.message); }
+  }
+
+  // Atualiza a cada 3 segundos enquanto a página estiver aberta na tela
+  setInterval(() => { if (!document.hidden && !$('jogo').hidden) buscarEstado(); }, 3000);
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) buscarEstado(); });
+
+  // ---------- Compra ----------
+  function atualizarTotal() {
+    $('qtd').textContent = qtd;
+    $('menos').disabled = qtd <= 1;
+    $('mais').disabled = qtd >= (estado ? estado.maxPorCompra : 10);
+    $('total').textContent = estado && estado.preco ? reais(estado.preco * previas.length) : `${previas.length} cartela${previas.length > 1 ? 's' : ''}`;
+  }
+
+  function desenharPrevias() {
+    const lista = $('previas'); lista.innerHTML = '';
+    previas.forEach((c, i) => {
+      const b = document.createElement('button');
+      b.type = 'button'; b.className = 'botao-texto';
+      b.innerHTML = '<svg class="ic" style="width:15px;height:15px;vertical-align:-3px"><use href="#i-virar"/></svg> Trocar';
+      b.addEventListener('click', () => trocar(i, b));
+      lista.appendChild(desenharCartela(c, { acao: b }));
+    });
+    $('area-previas').hidden = !previas.length;
+    $('area-gerar').hidden = previas.length > 0;
+    atualizarTotal();
+  }
+
+  async function gerar(n) { return (await api('/api/bingo/gerar', { quantidade: n })).cartelas; }
+
+  async function trocar(i, botao) {
+    botao.disabled = true;
+    try { previas[i] = (await gerar(1))[0]; desenharPrevias(); } catch (e) { toast(e.message); botao.disabled = false; }
+  }
+
+  async function ajustarQtd(nova) {
+    qtd = nova;
+    atualizarTotal();
+    if (!previas.length) return;
+    try {
+      if (previas.length < qtd) previas.push(...await gerar(qtd - previas.length));
+      else previas = previas.slice(0, qtd);
+      desenharPrevias();
+    } catch (e) { toast(e.message); }
+  }
+  $('menos').addEventListener('click', () => ajustarQtd(Math.max(1, qtd - 1)));
+  $('mais').addEventListener('click', () => ajustarQtd(Math.min(estado ? estado.maxPorCompra : 10, qtd + 1)));
+
+  async function gerarTodas(botao) {
+    botao.disabled = true;
+    try { previas = await gerar(qtd); desenharPrevias(); } catch (e) { toast(e.message); }
+    botao.disabled = false;
+  }
+  $('gerar').addEventListener('click', () => gerarTodas($('gerar')));
+  $('gerar-todas').addEventListener('click', () => gerarTodas($('gerar-todas')));
+
+  $('confirmar').addEventListener('click', async () => {
+    const b = $('confirmar');
+    b.disabled = true;
+    try {
+      const r = await api('/api/bingo/comprar', { convidadoId, nome: localStorage.getItem('convidadoNome'), cartelas: previas });
+      minhas.push(...r.cartelas);
+      previas = [];
+      desenharPrevias();
+      desenharMinhas();
+      toast(r.cartelas.length > 1 ? `${r.cartelas.length} cartelas confirmadas. Boa sorte!` : 'Cartela confirmada. Boa sorte!');
+      $('minhas').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    } catch (e) {
+      toast(e.message, 7000);
+      buscarEstado();
+    }
+    b.disabled = false;
+  });
+
+  // ---------- Início ----------
+  fetch('/api/evento').then((r) => r.json()).then((ev) => {
+    const el = $('noivos'); el.textContent = '';
+    String(ev.noivos || '').split(/(\s&\s|\se\s)/).forEach((p) => {
+      if (/^\s(&|e)\s$/.test(p)) { const s = document.createElement('span'); s.className = 'e'; s.textContent = p; el.appendChild(s); }
+      else el.appendChild(document.createTextNode(p));
+    });
+  }).catch(() => {});
+
+  mostrarTela();
+  buscarMinhas().then(buscarEstado);
+})();
+</script>
+</body>
+</html>

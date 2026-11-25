@@ -315,11 +315,22 @@ app.delete('/api/painel/capa', exigirPainel, exigirSupabase, async (req, res) =>
 });
 
 app.get('/api/painel/qrcode.png', exigirPainel, async (req, res) => {
-  const png = await QRCode.toBuffer(urlDoSite(req), { width: 1000, margin: 2, errorCorrectionLevel: 'M' });
+  const bingo = req.query.pagina === 'bingo'; // ?pagina=bingo → QR do link do bingo
+  const png = await QRCode.toBuffer(urlDoSite(req) + (bingo ? '/bingo' : ''), { width: 1000, margin: 2, errorCorrectionLevel: 'M' });
   res.type('png');
   res.setHeader('Cache-Control', 'no-store');
-  if (req.query.baixar) res.attachment('qrcode-casamento.png');
+  if (req.query.baixar) res.attachment(bingo ? 'qrcode-bingo.png' : 'qrcode-casamento.png');
   res.send(png);
 });
+
+// ---------- Convites digitais ----------
+app.use(require('./convites')({ supabase, exigirPainel, limparTexto, urlDoSite, config }));
+
+// ---------- Bingo ----------
+app.use(require('./bingo')({
+  supabase, exigirPainel, limparTexto, iguais, idValido: ID_VALIDO,
+  segredo: crypto.createHmac('sha256', SENHA || crypto.randomBytes(32)).update('bingo-cartelas').digest(),
+  opcoes: config.bingo || {},
+}));
 
 module.exports = app;

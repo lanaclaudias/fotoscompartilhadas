@@ -59,3 +59,20 @@ Depois de cadastrar as variáveis, faça um novo deploy. O QR Code do painel usa
 - **1 GB de armazenamento** no total. Com fotos comprimidas (cerca de 1 MB cada), cabem umas 800 a 1.000 fotos. Para um casamento grande, considere o plano Pro (100 GB).
 - **50 MB por arquivo**, o que corta vídeos longos.
 - Projetos grátis são **pausados após 7 dias sem uso**. Reative no painel do Supabase antes do evento.
+
+## Bingo (`/bingo` e `/bingo/admin`)
+
+- **Convidados** (`/bingo`): escolhem quantas cartelas querem, podem trocar os números antes de confirmar e acompanham o sorteio ao vivo (a página se atualiza sozinha a cada 3 s). Quando alguém bate, aparece o aviso de **BINGO!** para todos.
+- **Quem sorteia** (`/bingo/admin`, mesma senha do painel): toca no número que saiu (ou digita). Escolhe se vale **cartela cheia** ou **uma linha** e começa novas rodadas. Os ganhadores aparecem na hora.
+- As vendas ficam abertas só enquanto nenhum número da rodada foi sorteado. As cartelas valem para todas as rodadas.
+- **Antes de usar:** rode [`supabase/bingo.sql`](supabase/bingo.sql) no SQL Editor do Supabase.
+- `config.json` → `bingo`: `preco` (por cartela), `maxPorCompra`, `maxPorConvidado` e `pagamento` (`"teste"` = confirma sem cobrar; o InfinitePay ainda será ligado).
+
+## Convites digitais (`/convite?c=CÓDIGO` e `/entrada?c=CÓDIGO`)
+
+- No **painel → aba Convites**, a noiva escreve o nome do convidado (ou dos convidados, ex.: "Patrícia e Carol"), escolhe quantas pessoas entram e clica em **Gerar convite**. Cada convite tem um link próprio, com botões para enviar pelo WhatsApp ou copiar o link.
+- O convidado abre o link: o passaporte se abre e mostra o convite e o cartão de embarque com o nome dele. No lugar do código de barras fica o **QR Code de entrada**.
+- Na porta, a equipe lê o QR Code com a câmera do celular. Abre a página `/entrada`, que mostra **Entrada liberada** (ou **Já entrou** se o convite já foi usado). Precisa estar logado com a senha do painel; basta fazer isso uma vez em cada celular.
+- No painel aparece quem já chegou. Também dá para marcar ou desfazer uma entrada manualmente.
+- **Antes de usar:** rode [`supabase/convites.sql`](supabase/convites.sql) no SQL Editor do Supabase.
+- Os textos do convite (locais, voo, frases) ficam em `config.json` → `convite`.

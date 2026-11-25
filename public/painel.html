@@ -40,6 +40,57 @@
 
     .conteudo { max-width: 1280px; margin: 0 auto; padding: 1.75rem 1.5rem 4rem; }
 
+    /* ---------- Abas ---------- */
+    .abas { max-width: 1280px; margin: 0 auto; padding: 0 1.5rem; display: flex; gap: .3rem; }
+    .abas button {
+      position: relative; border: 0; background: none; cursor: pointer; padding: .7rem 1rem .8rem;
+      display: inline-flex; align-items: center; gap: .45rem; font-weight: 600; font-size: .9rem; color: var(--texto-3);
+    }
+    .abas button .ic { width: 17px; height: 17px; }
+    .abas button.ativa { color: var(--verde); }
+    .abas button.ativa::after { content: ''; position: absolute; left: .6rem; right: .6rem; bottom: -1px; height: 2.5px; border-radius: 2px; background: var(--ouro); }
+
+    /* ---------- Bingo ---------- */
+    .grade-bingo { display: grid; grid-template-columns: 330px minmax(0, 1fr); gap: 1.5rem; align-items: start; }
+    @media (max-width: 900px) { .grade-bingo { grid-template-columns: 1fr; } }
+    .sorteio-cab { display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; margin-bottom: .6rem; }
+    .sorteio-cab h2 { margin: 0; font-family: var(--fonte-titulo); font-weight: 500; font-size: 1.5rem; }
+    .quadro-sorteio { width: 100%; height: 900px; border: 0; display: block; }
+    @media (max-width: 640px) { .bloco-sorteio { padding: 1rem .7rem; } }
+
+    /* ---------- Convites ---------- */
+    .grade-convites { display: grid; grid-template-columns: 360px minmax(0, 1fr); gap: 1.5rem; align-items: start; }
+    @media (max-width: 900px) { .grade-convites { grid-template-columns: 1fr; } }
+    .novo-convite { display: grid; gap: .9rem; }
+    .novo-convite label { display: grid; gap: .35rem; font-size: .85rem; font-weight: 500; color: var(--texto-2); }
+    .novo-convite .linha2 { display: grid; grid-template-columns: 1fr auto; gap: .7rem; align-items: center; }
+    .passo-p { display: flex; align-items: center; gap: .4rem; }
+    .passo-p button { width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--linha-forte); background: #fff; cursor: pointer; display: grid; place-items: center; color: var(--verde); font-size: 1.1rem; }
+    .passo-p output { min-width: 1.6rem; text-align: center; font-weight: 600; font-size: 1.15rem; }
+    .gerado { margin-top: 1.1rem; padding-top: 1.1rem; border-top: 1px dashed var(--linha-forte); text-align: center; }
+    .gerado .ok { display: inline-flex; align-items: center; gap: .4rem; color: var(--ok); font-weight: 600; font-size: .88rem; }
+    .gerado .nomes-g { margin: .35rem 0 .7rem; font-family: var(--fonte-script); font-size: 1.9rem; line-height: 1.2; color: var(--verde); }
+    .gerado img { width: 150px; height: 150px; display: block; margin: 0 auto .8rem; border-radius: 10px; border: 1px solid var(--linha); }
+    .botao-zap { background: linear-gradient(135deg, #3f9a5a, #2b7a43); }
+    .busca { width: auto; min-width: 200px; min-height: 42px; padding: .5rem 1rem; font-size: .88rem; border-radius: 999px; }
+    .lista-convites { display: grid; gap: .55rem; }
+    .convite-item { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: .9rem; align-items: center; padding: .8rem .9rem; border: 1px solid var(--linha); border-radius: 14px; background: #fff; }
+    .convite-item .num { width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; background: var(--ouro-fundo); color: var(--ouro-escuro); font-weight: 600; font-size: .85rem; }
+    .convite-item .quem { min-width: 0; }
+    .convite-item .quem strong { display: block; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .convite-item .quem span { font-size: .8rem; color: var(--texto-3); }
+    .selo-entrada { display: inline-flex; align-items: center; gap: .3rem; margin-left: .4rem; padding: .1rem .5rem; border-radius: 999px; font-size: .72rem; font-weight: 600; }
+    .selo-entrada.sim { background: #e6f0de; color: var(--ok); }
+    .selo-entrada.nao { background: var(--fundo-suave); color: var(--texto-3); }
+    .convite-item .acoes { display: flex; gap: .3rem; }
+    .mini-btn { width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--linha); background: #fff; color: var(--texto-2); cursor: pointer; display: grid; place-items: center; text-decoration: none; }
+    .mini-btn:hover { border-color: var(--verde-medio); color: var(--verde); }
+    .mini-btn.perigo:hover { border-color: var(--erro); color: var(--erro); }
+    .mini-btn .ic { width: 16px; height: 16px; }
+    @media (max-width: 560px) { .convite-item { grid-template-columns: auto minmax(0, 1fr); } .convite-item .acoes { grid-column: 1 / -1; justify-content: flex-end; } }
+    .lista-vazia { text-align: center; padding: 3rem 1rem; color: var(--texto-3); }
+
+
     /* ---------- Números ---------- */
     .numeros { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 1rem; margin-bottom: 1.75rem; }
     .numero { padding: 1.15rem 1.25rem; display: flex; align-items: center; gap: 1rem; box-shadow: var(--sombra-p); }
@@ -212,6 +263,11 @@
   <symbol id="i-video" viewBox="0 0 24 24"><rect x="3" y="6" width="13" height="12" rx="2.5"/><path d="M16 10.5l5-3v9l-5-3"/></symbol>
   <symbol id="i-pessoas" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 19a5.5 5.5 0 0 1 11 0"/><path d="M16 5.2a3 3 0 0 1 0 5.6M17.5 14.2A5.5 5.5 0 0 1 20.5 19"/></symbol>
   <symbol id="i-disco" viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="2.8"/><path d="M4 6v12c0 1.5 3.6 2.8 8 2.8s8-1.3 8-2.8V6"/><path d="M4 12c0 1.5 3.6 2.8 8 2.8s8-1.3 8-2.8"/></symbol>
+  <symbol id="i-bingo" viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="17" height="17" rx="2.5"/><path d="M3.5 9.2h17M3.5 14.8h17M9.2 3.5v17M14.8 3.5v17"/><circle cx="12" cy="12" r="1.3" fill="currentColor"/></symbol>
+  <symbol id="i-carta" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3.5 6l8.5 7 8.5-7"/></symbol>
+  <symbol id="i-zap" viewBox="0 0 24 24"><path d="M4 20l1.2-3.6A8 8 0 1 1 8 19z"/><path d="M9 9.5c0 3 2.5 5.5 5.5 5.5l1-1.5-2-1-1 .8a4 4 0 0 1-1.8-1.8l.8-1-1-2z"/></symbol>
+  <symbol id="i-entrada" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></symbol>
+  <symbol id="i-desfazer" viewBox="0 0 24 24"><path d="M9 14L4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/></symbol>
   <symbol id="i-esq" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></symbol>
   <symbol id="i-dir" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></symbol>
   <symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5.5v13l10.5-6.5z" fill="currentColor"/></symbol>
@@ -247,9 +303,14 @@
       <a class="botao-linha so-desktop" href="/" target="_blank" rel="noopener"><svg class="ic"><use href="#i-externo"/></svg>Página dos convidados</a>
       <button class="botao-linha" id="sair"><svg class="ic"><use href="#i-sair"/></svg>Sair</button>
     </div>
+    <nav class="abas" role="tablist">
+      <button type="button" class="ativa" data-aba="fotos" role="tab"><svg class="ic"><use href="#i-imagem"/></svg>Fotos</button>
+      <button type="button" data-aba="convites" role="tab"><svg class="ic"><use href="#i-carta"/></svg>Convites</button>
+      <button type="button" data-aba="bingo" role="tab"><svg class="ic"><use href="#i-bingo"/></svg>Bingo</button>
+    </nav>
   </header>
 
-  <main class="conteudo">
+  <main class="conteudo" id="aba-fotos">
     <div class="numeros">
       <div class="cartao numero"><div class="ic-caixa"><svg class="ic"><use href="#i-imagem"/></svg></div><div><strong id="n-fotos">0</strong><span>Fotos</span></div></div>
       <div class="cartao numero" id="card-videos" hidden><div class="ic-caixa"><svg class="ic"><use href="#i-video"/></svg></div><div><strong id="n-videos">0</strong><span>Vídeos</span></div></div>
@@ -306,6 +367,84 @@
           <button class="botao-linha perigo" id="apagar-tudo" style="width:100%"><svg class="ic"><use href="#i-lixo"/></svg>Apagar todas as fotos</button>
         </section>
       </aside>
+    </div>
+  </main>
+
+  <!-- ================= Bingo ================= -->
+  <main class="conteudo" id="aba-bingo" hidden>
+    <div class="grade-bingo">
+      <aside class="lateral" style="display:grid;gap:1.25rem">
+        <section class="cartao bloco">
+          <h3>Link do bingo para os convidados</h3>
+          <p class="desc">É por aqui que os convidados compram as cartelas e acompanham o sorteio ao vivo. Envie o link ou mostre o QR Code.</p>
+          <div class="qr-moldura"><img id="bingo-qr" alt="QR Code do bingo"></div>
+          <div class="url-site"><span id="bingo-url"></span><button id="bingo-copiar" title="Copiar link"><svg class="ic"><use href="#i-copiar"/></svg></button></div>
+          <div class="acoes-col">
+            <a class="botao botao-zap" id="bingo-zap" target="_blank" rel="noopener"><svg class="ic"><use href="#i-zap"/></svg>Enviar pelo WhatsApp</a>
+            <a class="botao-linha" id="bingo-abrir" target="_blank" rel="noopener"><svg class="ic"><use href="#i-externo"/></svg>Abrir página do bingo</a>
+            <a class="botao-linha" href="/api/painel/qrcode.png?pagina=bingo&amp;baixar=1"><svg class="ic"><use href="#i-baixar"/></svg>Baixar QR Code (PNG)</a>
+          </div>
+        </section>
+      </aside>
+
+      <section class="cartao bloco bloco-sorteio">
+        <div class="sorteio-cab">
+          <h2>Sorteio</h2>
+          <a class="botao-linha" href="/bingo/admin" target="_blank" rel="noopener"><svg class="ic"><use href="#i-externo"/></svg>Abrir em tela cheia</a>
+        </div>
+        <iframe class="quadro-sorteio" id="quadro-sorteio" title="Sorteio do bingo"></iframe>
+      </section>
+    </div>
+  </main>
+
+  <!-- ================= Convites ================= -->
+  <main class="conteudo" id="aba-convites" hidden>
+    <div class="numeros">
+      <div class="cartao numero"><div class="ic-caixa"><svg class="ic"><use href="#i-carta"/></svg></div><div><strong id="n-convites">0</strong><span>Convites</span></div></div>
+      <div class="cartao numero"><div class="ic-caixa"><svg class="ic"><use href="#i-pessoas"/></svg></div><div><strong id="n-pessoas">0</strong><span>Pessoas convidadas</span></div></div>
+      <div class="cartao numero"><div class="ic-caixa"><svg class="ic"><use href="#i-check"/></svg></div><div><strong id="n-entraram">0</strong><span>Pessoas que já entraram</span></div></div>
+    </div>
+
+    <div class="grade-convites">
+      <section class="cartao bloco">
+        <div class="bloco-cab" style="margin-bottom:.8rem"><h2>Novo convite</h2></div>
+        <form class="novo-convite" id="form-convite">
+          <label>Nome do convidado ou dos convidados
+            <input class="campo" id="conv-nomes" maxlength="120" placeholder="Ex.: Patrícia e Carol" required>
+          </label>
+          <div class="linha2">
+            <label style="margin:0">Quantas pessoas entram com este convite?</label>
+            <div class="passo-p">
+              <button type="button" id="conv-menos" aria-label="Menos">−</button>
+              <output id="conv-pessoas">2</output>
+              <button type="button" id="conv-mais" aria-label="Mais">+</button>
+            </div>
+          </div>
+          <button class="botao" type="submit" id="conv-gerar"><svg class="ic"><use href="#i-carta"/></svg>Gerar convite</button>
+          <p class="msg-erro" id="conv-erro" style="text-align:center"></p>
+        </form>
+        <div class="gerado" id="gerado" hidden>
+          <span class="ok"><svg class="ic"><use href="#i-check"/></svg>Convite gerado</span>
+          <p class="nomes-g" id="gerado-nomes"></p>
+          <img id="gerado-qr" alt="QR Code de entrada do convite">
+          <div class="acoes-col">
+            <a class="botao botao-zap" id="gerado-zap" target="_blank" rel="noopener"><svg class="ic"><use href="#i-zap"/></svg>Enviar pelo WhatsApp</a>
+            <button class="botao-linha" type="button" id="gerado-copiar"><svg class="ic"><use href="#i-copiar"/></svg><span>Copiar link do convite</span></button>
+            <a class="botao-linha" id="gerado-abrir" target="_blank" rel="noopener"><svg class="ic"><use href="#i-externo"/></svg>Ver convite</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="cartao bloco">
+        <div class="bloco-cab">
+          <h2>Convites</h2>
+          <div class="ferramentas">
+            <input class="campo busca" id="conv-busca" type="search" placeholder="Buscar nome" aria-label="Buscar convite">
+            <button class="botao-linha" id="conv-atualizar" title="Atualizar"><svg class="ic"><use href="#i-atualizar"/></svg>Atualizar</button>
+          </div>
+        </div>
+        <div class="lista-convites" id="lista-convites"></div>
+      </section>
     </div>
   </main>
 </div>
@@ -758,6 +897,166 @@ $('modal-ok').addEventListener('click', async () => {
   }
 });
 
+// ---------- Abas ----------
+function trocarAba(aba) {
+  document.querySelectorAll('.abas button').forEach((b) => b.classList.toggle('ativa', b.dataset.aba === aba));
+  for (const nome of ['fotos', 'convites', 'bingo']) $('aba-' + nome).hidden = aba !== nome;
+  history.replaceState(null, '', aba === 'fotos' ? location.pathname : '#' + aba);
+  if (aba === 'convites') carregarConvites();
+  if (aba === 'bingo') abrirBingo();
+}
+
+// ---------- Bingo ----------
+function abrirBingo() {
+  const url = (dados.urlSite || location.origin) + '/bingo';
+  $('bingo-url').textContent = url.replace(/^https?:\/\//, '');
+  $('bingo-qr').src = '/api/painel/qrcode.png?pagina=bingo&v=' + encodeURIComponent(url);
+  $('bingo-abrir').href = url;
+  $('bingo-zap').href = 'https://wa.me/?text=' + encodeURIComponent(`Bingo do casamento ${evento.noivos || ''}! Compre suas cartelas e acompanhe o sorteio ao vivo: ${url}`);
+  $('bingo-copiar').onclick = async () => { if (await copiar(url)) alert('Link do bingo copiado!'); };
+  const quadro = $('quadro-sorteio');
+  if (!quadro.src) {
+    quadro.src = '/bingo/admin';
+    // a altura do quadro acompanha o conteúdo da tela de sorteio
+    quadro.addEventListener('load', () => {
+      const doc = quadro.contentDocument;
+      if (!doc) return;
+      const ajustar = () => { quadro.style.height = doc.documentElement.scrollHeight + 'px'; };
+      new ResizeObserver(ajustar).observe(doc.body);
+      ajustar();
+    });
+  }
+}
+document.querySelectorAll('.abas button').forEach((b) => b.addEventListener('click', () => trocarAba(b.dataset.aba)));
+
+// ---------- Convites ----------
+let convites = [];
+let pessoasNovo = 2;
+
+function textoZap(c) {
+  return `Olá, ${c.nomes}! Com muita alegria, ${evento.noivos || 'os noivos'} convidam vocês para o casamento. Abra seu convite: ${c.link}`;
+}
+async function copiar(texto) {
+  try { await navigator.clipboard.writeText(texto); return true; } catch { prompt('Copie o link:', texto); return false; }
+}
+function horaCurta(iso) { return new Date(iso).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }); }
+function mensagemLista(texto) {
+  const d = document.createElement('div');
+  d.className = 'lista-vazia';
+  d.textContent = texto;
+  $('lista-convites').replaceChildren(d);
+}
+
+function renderizarConvites() {
+  const q = $('conv-busca').value.trim().toLowerCase();
+  $('n-convites').textContent = convites.length;
+  $('n-pessoas').textContent = convites.reduce((s, c) => s + c.pessoas, 0);
+  $('n-entraram').textContent = convites.filter((c) => c.entradaEm).reduce((s, c) => s + c.pessoas, 0);
+  const vis = convites.filter((c) => !q || c.nomes.toLowerCase().includes(q) || String(c.numero) === q);
+  if (!vis.length) return mensagemLista(convites.length ? 'Nenhum convite com esse nome.' : 'Nenhum convite ainda. Crie o primeiro ao lado.');
+
+  const lista = $('lista-convites');
+  lista.innerHTML = '';
+  for (const c of vis) {
+    const el = document.createElement('div');
+    el.className = 'convite-item';
+    el.innerHTML = '<div class="num"></div><div class="quem"><strong></strong><span></span></div><div class="acoes"></div>';
+    el.querySelector('.num').textContent = c.numero;
+    el.querySelector('strong').textContent = c.nomes;
+    const sub = el.querySelector('.quem span');
+    sub.textContent = `${c.pessoas} pessoa${c.pessoas > 1 ? 's' : ''}`;
+    const selo = document.createElement('span');
+    selo.className = 'selo-entrada ' + (c.entradaEm ? 'sim' : 'nao');
+    selo.textContent = c.entradaEm ? `Entrou às ${horaCurta(c.entradaEm)}` : 'Não chegou';
+    sub.appendChild(selo);
+
+    const acoes = el.querySelector('.acoes');
+    const botao = (ic, titulo, fn, extra = '') => {
+      const b = document.createElement('button');
+      b.type = 'button'; b.className = 'mini-btn ' + extra; b.title = titulo; b.setAttribute('aria-label', titulo);
+      b.innerHTML = icone(ic); b.addEventListener('click', fn); acoes.appendChild(b);
+    };
+    const link = (ic, titulo, href) => {
+      const a = document.createElement('a');
+      a.className = 'mini-btn'; a.title = titulo; a.setAttribute('aria-label', titulo); a.target = '_blank'; a.rel = 'noopener';
+      a.href = href; a.innerHTML = icone(ic); acoes.appendChild(a);
+    };
+    link('zap', 'Enviar pelo WhatsApp', 'https://wa.me/?text=' + encodeURIComponent(textoZap(c)));
+    botao('copiar', 'Copiar link', async () => { if (await copiar(c.link)) alert('Link copiado!'); });
+    link('externo', 'Ver convite', c.link);
+    botao(c.entradaEm ? 'desfazer' : 'entrada', c.entradaEm ? 'Desfazer entrada' : 'Marcar entrada manualmente', () => alterarConvite(c, { entrou: !c.entradaEm }));
+    botao('lixo', 'Apagar convite', () => apagarConvite(c), 'perigo');
+    lista.appendChild(el);
+  }
+}
+
+async function carregarConvites() {
+  try {
+    const r = await api('/api/painel/convites');
+    const j = await r.json();
+    if (!r.ok) throw new Error(j.erro || 'Falha ao carregar os convites');
+    convites = j.convites;
+    renderizarConvites();
+  } catch (e) {
+    if (e.message !== '401') mensagemLista(e.message);
+  }
+}
+
+async function alterarConvite(c, campos) {
+  if (campos.entrou === false && !confirm(`Desfazer a entrada de ${c.nomes}?`)) return;
+  try {
+    const r = await api('/api/painel/convites/' + c.id, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(campos) });
+    const j = await r.json();
+    if (!r.ok) throw new Error(j.erro);
+    Object.assign(c, j.convite);
+    renderizarConvites();
+  } catch (e) { if (e.message !== '401') alert(e.message || 'Não foi possível alterar'); }
+}
+
+async function apagarConvite(c) {
+  if (!confirm(`Apagar o convite de ${c.nomes}? O link e o QR Code dele deixam de funcionar.`)) return;
+  try {
+    const r = await api('/api/painel/convites/' + c.id, { method: 'DELETE' });
+    if (!r.ok) throw new Error((await r.json().catch(() => ({}))).erro);
+    convites = convites.filter((x) => x.id !== c.id);
+    renderizarConvites();
+  } catch (e) { if (e.message !== '401') alert(e.message || 'Não foi possível apagar'); }
+}
+
+$('conv-menos').addEventListener('click', () => { pessoasNovo = Math.max(1, pessoasNovo - 1); $('conv-pessoas').textContent = pessoasNovo; });
+$('conv-mais').addEventListener('click', () => { pessoasNovo = Math.min(20, pessoasNovo + 1); $('conv-pessoas').textContent = pessoasNovo; });
+
+$('form-convite').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  $('conv-erro').textContent = '';
+  const b = $('conv-gerar');
+  b.disabled = true;
+  try {
+    const r = await api('/api/painel/convites', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ nomes: $('conv-nomes').value, pessoas: pessoasNovo }) });
+    const j = await r.json();
+    if (!r.ok) throw new Error(j.erro || 'Não foi possível gerar o convite');
+    const c = j.convite;
+    convites.unshift(c);
+    renderizarConvites();
+    $('gerado').hidden = false;
+    $('gerado-nomes').textContent = c.nomes;
+    $('gerado-qr').src = `/api/convite/${c.codigo}/qr.svg`;
+    $('gerado-zap').href = 'https://wa.me/?text=' + encodeURIComponent(textoZap(c));
+    $('gerado-abrir').href = c.link;
+    const txt = $('gerado-copiar').querySelector('span');
+    $('gerado-copiar').onclick = async () => {
+      if (await copiar(c.link)) { txt.textContent = 'Link copiado!'; setTimeout(() => { txt.textContent = 'Copiar link do convite'; }, 2000); }
+    };
+    $('conv-nomes').value = '';
+    $('conv-nomes').focus();
+  } catch (err) {
+    if (err.message !== '401') $('conv-erro').textContent = err.message;
+  }
+  b.disabled = false;
+});
+$('conv-busca').addEventListener('input', renderizarConvites);
+$('conv-atualizar').addEventListener('click', carregarConvites);
+
 // ---------- Início ----------
 fetch('/api/evento').then((r) => r.json()).then((ev) => {
   evento = ev;
@@ -766,7 +1065,7 @@ fetch('/api/evento').then((r) => r.json()).then((ev) => {
   $('imp-data').textContent = ev.data || '';
   document.title = `Painel • ${ev.noivos}`;
   mostrarCapa(ev.capaUrl);
-}).catch(() => {}).finally(carregar);
+}).catch(() => {}).finally(() => { carregar(); if (['#convites', '#bingo'].includes(location.hash)) trocarAba(location.hash.slice(1)); });
 </script>
 </body>
 </html>

@@ -7,5 +7,35 @@
   "urlPublica": "",
   "aceitarVideos": false,
   "tamanhoMaximoMB": 50,
-  "comprimirFotos": true
+  "comprimirFotos": true,
+  "bingo": {
+    "preco": 10,
+    "maxPorCompra": 10,
+    "maxPorConvidado": 30,
+    "pagamento": "teste"
+  },
+  "convite": {
+    "abertura": "Com muita alegria e gratidão a Deus,",
+    "convite": "para celebrar conosco um dos momentos mais importantes das nossas vidas.",
+    "paragrafos": [
+      "Após anos de amor, companheirismo, sonhos compartilhados e muitas bênçãos recebidas, chegou o dia de oficializarmos diante de Deus a união que construímos com carinho ao longo da nossa caminhada.",
+      "Será uma honra ter vocês ao nosso lado para testemunhar e celebrar este novo capítulo da nossa história."
+    ],
+    "frase": "Toda grande jornada começa com um simples embarque.",
+    "monograma": "JN",
+    "voo": "JN25092027",
+    "destinoTopo": "O nosso para sempre",
+    "de": "Amizade que nos inspira",
+    "para": "Um dia inesquecível",
+    "destino": "Casamento de Júlio & Naiara",
+    "cerimonia": "Paróquia São José – Chã Grande/PE",
+    "recepcao": "Chácara Araquem",
+    "classe": "Especial",
+    "lema": "Prepare o coração, o amor será o guia.",
+    "rodape": "Confirme sua presença e embarque conosco",
+    "dia": "25",
+    "mes": "Set",
+    "ano": "2027",
+    "verso": "Rumo à nossa maior aventura"
+  }
 }

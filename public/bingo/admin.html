@@ -1,0 +1,308 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#33422a">
+  <meta name="robots" content="noindex">
+  <title>Bingo · Sorteio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&family=Parisienne&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/estilo.css">
+  <style>
+    body { min-height: 100vh; background: var(--papel); }
+    .pagina { max-width: 980px; margin: 0 auto; padding: max(1.2rem, env(safe-area-inset-top)) 1rem 3rem; }
+    /* Dentro do painel dos noivos (aba Bingo) */
+    .embutido body { min-height: 0; }
+    .embutido .pagina { padding: .2rem 0 .5rem; }
+    .cab { display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
+    .cab h1 { margin: 0; font-family: var(--fonte-caps); font-weight: 700; letter-spacing: .2em; font-size: 1.35rem; color: var(--verde); }
+    .cab h1 small { display: block; font-family: var(--fonte); font-weight: 500; letter-spacing: 0; font-size: .8rem; color: var(--texto-3); }
+    .numeros-info { display: flex; gap: .5rem; flex-wrap: wrap; }
+    .pilula { padding: .4rem .8rem; border-radius: 999px; background: var(--branco); border: 1px solid var(--linha); font-size: .82rem; color: var(--texto-2); }
+    .pilula strong { color: var(--verde); }
+
+    .layout { display: grid; gap: 1rem; margin-top: 1rem; }
+    @media (min-width: 820px) { .layout { grid-template-columns: 330px 1fr; align-items: start; } }
+    .bloco { padding: 1.1rem; }
+    .bloco h2 { margin: 0 0 .8rem; font-size: .72rem; font-weight: 600; letter-spacing: .2em; text-transform: uppercase; color: var(--ouro-escuro); }
+
+    /* Último número + entrada rápida */
+    .ultimo { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
+    .bola {
+      width: 104px; height: 104px; flex: none; border-radius: 50%; display: grid; place-items: center; align-content: center;
+      background: radial-gradient(circle at 35% 30%, #fffaf0, #efe2c4 70%, #d9bf8c);
+      box-shadow: 0 10px 22px rgba(35, 46, 28, .22), inset 0 0 0 5px var(--ouro), inset 0 0 0 7px #fffaf0; color: var(--verde);
+    }
+    .bola .l { font-family: var(--fonte-caps); font-weight: 700; font-size: .95rem; letter-spacing: .1em; color: var(--ouro-escuro); line-height: 1; }
+    .bola .n { font-family: var(--fonte-caps); font-weight: 700; font-size: 2.6rem; line-height: 1; }
+    .ultimo .lado { display: grid; gap: .45rem; }
+    .ultimo .conta { font-size: .95rem; color: var(--verde); font-weight: 600; }
+    .entrada { display: flex; gap: .5rem; margin-top: 1rem; }
+    .entrada .campo { min-width: 0; font-size: 1.3rem; font-weight: 600; text-align: center; }
+    .entrada .botao { flex: none; }
+    .recentes { display: flex; flex-wrap: wrap; gap: .3rem; margin-top: .9rem; }
+    .recentes span { padding: .2rem .5rem; border-radius: 999px; background: var(--ouro-fundo); font-size: .78rem; font-weight: 600; color: var(--verde); }
+
+    /* Modo e rodada */
+    .modo { display: grid; grid-template-columns: 1fr 1fr; gap: .4rem; padding: .3rem; border-radius: 999px; background: var(--ouro-fundo); }
+    .modo button { min-height: 40px; border: 0; border-radius: 999px; background: none; cursor: pointer; font-weight: 600; font-size: .85rem; color: var(--texto-2); }
+    .modo button.ativo { background: var(--gradiente-verde); color: #f4ead3; }
+    .nova-rodada { width: 100%; margin-top: .8rem; }
+
+    /* Ganhadores */
+    .ganhadores { background: var(--gradiente-verde); color: #f4ead3; border: 0; }
+    .ganhadores h2 { color: var(--ouro-claro); }
+    .ganhadores ol { margin: 0; padding-left: 1.3rem; display: grid; gap: .35rem; }
+    .ganhadores li { font-size: 1.15rem; font-family: var(--fonte-titulo); }
+    .ganhadores li small { display: block; font-family: var(--fonte); font-size: .78rem; color: var(--ouro-claro); }
+
+    /* Grade de números */
+    .grade { display: grid; grid-template-columns: repeat(5, 1fr); gap: .45rem; }
+    .coluna { display: grid; gap: .4rem; align-content: start; }
+    .coluna .letra { text-align: center; padding: .4rem 0; border-radius: 10px; background: var(--gradiente-verde); color: var(--ouro-claro); font-family: var(--fonte-caps); font-weight: 700; font-size: 1.2rem; }
+    .num {
+      min-height: 46px; border-radius: 10px; border: 1px solid var(--linha-forte); background: var(--branco); cursor: pointer;
+      font-weight: 600; font-size: 1.05rem; color: var(--verde); transition: background .15s, color .15s, transform .1s;
+    }
+    .num:active { transform: scale(.94); }
+    .num.marcado { background: var(--gradiente-ouro); border-color: transparent; color: #fffaf0; }
+    .num.ultimo-n { box-shadow: 0 0 0 3px var(--verde); }
+    .num:disabled { opacity: .6; }
+    .dica { margin: .8rem 0 0; font-size: .8rem; color: var(--texto-3); text-align: center; }
+
+    /* Login */
+    .login { max-width: 380px; margin: 12vh auto 0; padding: 1.5rem; display: grid; gap: .8rem; text-align: center; }
+    .login h1 { margin: 0; font-family: var(--fonte-caps); letter-spacing: .2em; color: var(--verde); }
+    .erro { color: var(--erro); font-size: .88rem; margin: 0; }
+
+    .alerta { position: fixed; inset: 0; z-index: 50; display: grid; place-items: center; padding: 1.5rem; background: rgba(25, 32, 20, .75); }
+    .alerta .caixa {
+      width: min(100%, 440px); padding: 2rem 1.5rem 1.5rem; text-align: center; border-radius: 24px; color: #f4ead3;
+      background: var(--gradiente-verde); box-shadow: 0 30px 80px rgba(0, 0, 0, .4), inset 0 0 0 1px rgba(217, 191, 140, .6), inset 0 0 0 7px #33422a, inset 0 0 0 8px rgba(217, 191, 140, .35);
+    }
+    .alerta .grito { margin: 0; font-family: var(--fonte-caps); font-weight: 700; font-size: 2.8rem; letter-spacing: .18em; color: var(--ouro-claro); }
+    .alerta ul { list-style: none; padding: 0; margin: .8rem 0 1.4rem; display: grid; gap: .5rem; }
+    .alerta li { font-family: var(--fonte-script); font-size: 2rem; line-height: 1.2; color: #fffaf0; }
+    .alerta li small { display: block; font-family: var(--fonte); font-size: .85rem; color: var(--ouro-claro); }
+    .alerta .botao { background: var(--gradiente-ouro); color: var(--verde-escuro); }
+    .toast { position: fixed; left: 50%; bottom: 1.2rem; transform: translateX(-50%); z-index: 60; padding: .75rem 1.1rem; border-radius: 12px; background: var(--verde-escuro); color: #f4ead3; font-size: .9rem; }
+  </style>
+</head>
+<body>
+<form class="cartao login" id="login" hidden>
+  <h1>BINGO</h1>
+  <p class="suave" style="margin:0">Use a mesma senha do painel dos noivos.</p>
+  <input class="campo" type="password" id="senha" placeholder="Senha" autocomplete="current-password" required>
+  <button class="botao" type="submit">Entrar</button>
+  <p class="erro" id="erro-login"></p>
+</form>
+
+<main class="pagina" id="tela" hidden>
+  <header class="cab">
+    <h1>BINGO <small id="rodada-tit">Rodada 1</small></h1>
+    <div class="numeros-info">
+      <span class="pilula"><strong id="vendidas">0</strong> cartelas</span>
+      <span class="pilula"><strong id="compradores">0</strong> convidados</span>
+    </div>
+  </header>
+
+  <div class="layout">
+    <div style="display:grid;gap:1rem">
+      <section class="cartao bloco">
+        <h2>Último número</h2>
+        <div class="ultimo">
+          <div class="bola"><span class="l" id="bola-l"></span><span class="n" id="bola-n">–</span></div>
+          <div class="lado">
+            <span class="conta" id="conta">Nenhum número</span>
+            <button class="botao-linha" type="button" id="desfazer" disabled>Desfazer último</button>
+          </div>
+        </div>
+        <form class="entrada" id="form-numero">
+          <input class="campo" id="campo-numero" type="number" inputmode="numeric" min="1" max="75" placeholder="Nº que saiu" aria-label="Número sorteado">
+          <button class="botao" type="submit">Marcar</button>
+        </form>
+        <div class="recentes" id="recentes"></div>
+      </section>
+
+      <section class="cartao bloco ganhadores" id="bloco-ganhadores" hidden>
+        <h2>Bateram o bingo</h2>
+        <ol id="ganhadores"></ol>
+      </section>
+
+      <section class="cartao bloco">
+        <h2>O que vale nesta rodada</h2>
+        <div class="modo">
+          <button type="button" data-modo="cheia">Cartela cheia</button>
+          <button type="button" data-modo="linha">Uma linha</button>
+        </div>
+        <button class="botao-linha nova-rodada" type="button" id="nova-rodada">Começar nova rodada</button>
+      </section>
+    </div>
+
+    <section class="cartao bloco">
+      <h2>Toque no número que saiu</h2>
+      <div class="grade" id="grade"></div>
+      <p class="dica">Os convidados veem cada número em poucos segundos, sem recarregar a página. Toque de novo num número marcado para desmarcar.</p>
+    </section>
+  </div>
+</main>
+
+<div class="alerta" id="alerta" hidden>
+  <div class="caixa" role="alertdialog">
+    <p class="grito">BINGO!</p>
+    <ul id="alerta-lista"></ul>
+    <button class="botao" type="button" id="alerta-ok">Fechar</button>
+  </div>
+</div>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+if (window.self !== window.top) document.documentElement.classList.add('embutido');
+(() => {
+  const $ = (id) => document.getElementById(id);
+  const LETRAS = 'BINGO';
+  const letra = (n) => LETRAS[Math.floor((n - 1) / 15)];
+  let estado = null;
+  let ocupado = false;
+
+  function toast(msg) {
+    const t = $('toast'); t.textContent = msg; t.hidden = false;
+    clearTimeout(toast.t); toast.t = setTimeout(() => { t.hidden = true; }, 3500);
+  }
+
+  async function api(url, corpo) {
+    const r = await fetch(url, corpo ? { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(corpo) } : {});
+    const d = await r.json().catch(() => ({}));
+    if (r.status === 401 && !url.includes('login')) { mostrarLogin(); throw new Error('Entre com a senha'); }
+    if (!r.ok) throw new Error(d.erro || 'Falha de conexão');
+    return d;
+  }
+
+  function mostrarLogin() { $('login').hidden = false; $('tela').hidden = true; $('senha').focus(); }
+  $('login').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    $('erro-login').textContent = '';
+    try { await api('/api/painel/login', { senha: $('senha').value }); $('login').hidden = true; carregar(); }
+    catch (err) { $('erro-login').textContent = err.message; }
+  });
+
+  // Grade 1–75, uma coluna por letra
+  const botoes = {};
+  for (let c = 0; c < 5; c++) {
+    const col = document.createElement('div'); col.className = 'coluna';
+    const l = document.createElement('div'); l.className = 'letra'; l.textContent = LETRAS[c]; col.appendChild(l);
+    for (let n = c * 15 + 1; n <= c * 15 + 15; n++) {
+      const b = document.createElement('button');
+      b.type = 'button'; b.className = 'num'; b.textContent = n;
+      b.addEventListener('click', () => alternar(n));
+      botoes[n] = b; col.appendChild(b);
+    }
+    $('grade').appendChild(col);
+  }
+
+  const vistos = new Set();
+  function aplicar(novo) {
+    const antes = estado;
+    estado = { ...(antes || {}), ...novo };
+    const s = estado.sorteados;
+    const marcados = new Set(s);
+    const ultimo = s[s.length - 1];
+    for (let n = 1; n <= 75; n++) {
+      botoes[n].classList.toggle('marcado', marcados.has(n));
+      botoes[n].classList.toggle('ultimo-n', n === ultimo);
+    }
+    $('bola-l').textContent = ultimo ? letra(ultimo) : '';
+    $('bola-n').textContent = ultimo || '–';
+    $('conta').textContent = s.length ? `${s.length} de 75 números` : 'Nenhum número';
+    $('desfazer').disabled = !ultimo;
+    $('recentes').innerHTML = '';
+    [...s].reverse().slice(1, 13).forEach((n) => { const x = document.createElement('span'); x.textContent = `${letra(n)} ${n}`; $('recentes').appendChild(x); });
+    $('rodada-tit').textContent = `Rodada ${estado.rodada || 1}${estado.vendasAbertas ? ' · vendas abertas' : ' · vendas fechadas'}`;
+    document.querySelectorAll('.modo button').forEach((b) => b.classList.toggle('ativo', b.dataset.modo === estado.modo));
+    if (novo.cartelasVendidas !== undefined) {
+      $('vendidas').textContent = novo.cartelasVendidas;
+      $('compradores').textContent = novo.compradores;
+    }
+
+    const g = estado.ganhadores || [];
+    $('bloco-ganhadores').hidden = !g.length;
+    $('ganhadores').innerHTML = '';
+    g.forEach((x) => {
+      const li = document.createElement('li'); li.textContent = x.nome;
+      const sm = document.createElement('small'); sm.textContent = `Cartela nº ${x.numero} · bateu no ${letra(x.noNumero)} ${x.noNumero}`;
+      li.appendChild(sm); $('ganhadores').appendChild(li);
+    });
+    const chave = (x) => `${estado.rodada}:${x.id}`;
+    const novos = g.filter((x) => !vistos.has(chave(x)));
+    novos.forEach((x) => vistos.add(chave(x)));
+    if (antes && novos.length) {
+      $('alerta-lista').innerHTML = '';
+      novos.forEach((x) => {
+        const li = document.createElement('li'); li.textContent = x.nome;
+        const sm = document.createElement('small'); sm.textContent = `Cartela nº ${x.numero}`;
+        li.appendChild(sm); $('alerta-lista').appendChild(li);
+      });
+      $('alerta').hidden = false;
+    }
+  }
+  $('alerta-ok').addEventListener('click', () => { $('alerta').hidden = true; });
+
+  async function enviar(url, corpo) {
+    ocupado = true;
+    try { aplicar(await api(url, corpo)); } catch (e) { toast(e.message); }
+    ocupado = false;
+  }
+
+  // Primeiro número da rodada fecha as vendas: avisa se ainda não há cartelas
+  function podeComecar() {
+    if (!estado || estado.sorteados.length) return true;
+    if (!estado.cartelasVendidas) return confirm('Ainda não há nenhuma cartela comprada. Marcar o primeiro número fecha as vendas desta rodada. Continuar?');
+    return confirm(`Marcar o primeiro número fecha as vendas desta rodada (${estado.cartelasVendidas} cartelas vendidas). Continuar?`);
+  }
+
+  function alternar(n) {
+    const marcado = estado && estado.sorteados.includes(n);
+    if (!marcado && !podeComecar()) return;
+    if (marcado && !confirm(`Desmarcar o ${letra(n)} ${n}?`)) return;
+    enviar('/api/bingo/admin/numero', { numero: n, marcado: !marcado });
+  }
+
+  $('form-numero').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const n = Number($('campo-numero').value);
+    if (!Number.isInteger(n) || n < 1 || n > 75) return toast('Digite um número de 1 a 75');
+    $('campo-numero').value = '';
+    if (estado && estado.sorteados.includes(n)) return toast(`O ${letra(n)} ${n} já foi marcado`);
+    if (!podeComecar()) return;
+    enviar('/api/bingo/admin/numero', { numero: n, marcado: true });
+  });
+
+  $('desfazer').addEventListener('click', () => {
+    const u = estado.sorteados[estado.sorteados.length - 1];
+    if (u && confirm(`Desmarcar o último número (${letra(u)} ${u})?`)) enviar('/api/bingo/admin/numero', { numero: u, marcado: false });
+  });
+
+  document.querySelectorAll('.modo button').forEach((b) => b.addEventListener('click', () => {
+    if (estado && b.dataset.modo !== estado.modo) enviar('/api/bingo/admin/modo', { modo: b.dataset.modo });
+  }));
+
+  $('nova-rodada').addEventListener('click', () => {
+    if (!confirm('Começar uma nova rodada? Os números marcados serão zerados e as vendas de cartelas voltam a abrir.')) return;
+    enviar('/api/bingo/admin/nova-rodada', { modo: estado ? estado.modo : 'cheia' });
+  });
+
+  async function carregar() {
+    try {
+      aplicar(await api('/api/bingo/admin/estado'));
+      $('tela').hidden = false;
+    } catch (e) { if ($('login').hidden) toast(e.message); }
+  }
+  // Mantém em dia se houver mais de uma pessoa marcando
+  setInterval(() => { if (!document.hidden && !ocupado && !$('tela').hidden) carregar(); }, 4000);
+  carregar();
+})();
+</script>
+</body>
+</html>
