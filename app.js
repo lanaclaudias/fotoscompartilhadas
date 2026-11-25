@@ -128,8 +128,6 @@ app.get('/api/evento', async (req, res) => {
     data: config.data,
     mensagem: config.mensagem,
     horario: config.horario || '',
-    cerimonia: config.cerimonia || '',
-    recepcao: config.recepcao || '',
     tamanhoMaximoMB: MAX_MB,
     comprimirFotos: config.comprimirFotos !== false,
     aceitarVideos: ACEITAR_VIDEOS,
