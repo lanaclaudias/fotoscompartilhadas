@@ -64,15 +64,18 @@ Depois de cadastrar as variáveis, faça um novo deploy. O QR Code do painel usa
 
 - **Convidados** (`/bingo`): escolhem quantas cartelas querem, podem trocar os números antes de confirmar e acompanham o sorteio ao vivo (a página se atualiza sozinha a cada 3 s). Quando alguém bate, aparece o aviso de **BINGO!** para todos.
 - **Quem sorteia** (`/bingo/admin`, mesma senha do painel): toca no número que saiu (ou digita). Escolhe se vale **cartela cheia** ou **uma linha** e começa novas rodadas. Os ganhadores aparecem na hora.
-- As vendas ficam abertas só enquanto nenhum número da rodada foi sorteado. As cartelas valem para todas as rodadas.
-- **Antes de usar:** rode [`supabase/bingo.sql`](supabase/bingo.sql) no SQL Editor do Supabase.
+- A compra de cartelas começa **fechada**. A noiva libera no painel (aba Bingo → **Liberar compra de cartelas**) e pode fechar de novo quando quiser. Mesmo liberada, a venda fecha quando sai o primeiro número da rodada. As cartelas valem para todas as rodadas.
+- **Antes de usar:** rode [`supabase/bingo.sql`](supabase/bingo.sql) no SQL Editor do Supabase. Se já tinha rodado antes, rode de novo: ele só cria o que falta.
 - `config.json` → `bingo`: `preco` (por cartela), `maxPorCompra`, `maxPorConvidado` e `pagamento` (`"teste"` = confirma sem cobrar; o InfinitePay ainda será ligado).
 
-## Convites digitais (`/convite?c=CÓDIGO` e `/entrada?c=CÓDIGO`)
+## Convites digitais (`/convite?c=CÓDIGO` e `/entrada?k=CHAVE`)
 
-- No **painel → aba Convites**, a noiva escreve o nome do convidado (ou dos convidados, ex.: "Patrícia e Carol"), escolhe quantas pessoas entram e clica em **Gerar convite**. Cada convite tem um link próprio, com botões para enviar pelo WhatsApp ou copiar o link.
-- O convidado abre o link: o passaporte se abre e mostra o convite e o cartão de embarque com o nome dele. No lugar do código de barras fica o **QR Code de entrada**.
+- No **painel → aba Convites**, a noiva escreve o nome do convidado (ou dos convidados, ex.: "Patrícia e Carol"), escolhe quantas pessoas entram e clica em **Gerar convite**. Cada convite ganha um link próprio e uma **senha de 4 números**. A mensagem do WhatsApp já leva o link e a senha.
+- O convidado abre o link e vê o passaporte com o convite e o cartão de embarque com o nome dele. Em **Confirmar presença** ele digita a senha. Só então aparece o **QR Code de entrada**, que também pode ser baixado no bilhete em PDF. Depois de 5 senhas erradas, o convite fica bloqueado por 10 minutos.
 - Na porta, a equipe lê o QR Code com a câmera do celular. Abre a página `/entrada`, que mostra **Entrada liberada** (ou **Já entrou** se o convite já foi usado). Precisa estar logado com a senha do painel; basta fazer isso uma vez em cada celular.
-- No painel aparece quem já chegou. Também dá para marcar ou desfazer uma entrada manualmente.
-- **Antes de usar:** rode [`supabase/convites.sql`](supabase/convites.sql) no SQL Editor do Supabase.
-- Os textos do convite (locais, voo, frases) ficam em `config.json` → `convite`.
+- Depois da entrada, o cartão de embarque some do convite e ficam só as páginas do passaporte. Se o convite estiver aberto no celular do convidado, o cartão some sozinho em poucos segundos.
+- Na **aba Convites** do painel, o botão **Ler QR Code dos convites** abre a câmera do celular e libera a entrada na hora (mostra **Entrada liberada**, **Já entrou** ou **QR Code inválido**, com som). Precisa estar no endereço https do site.
+- Na página 2 do passaporte, o botão **Tirar fotos** só é liberado depois que o convidado entra na festa, e o **Comprar cartela** só depois que a noiva libera a compra no painel (aba Bingo → **Liberar compra de cartelas**). Os botões mudam sozinhos no convite aberto.
+- No painel aparecem a senha, quem confirmou presença e quem já chegou. Também dá para marcar ou desfazer uma entrada manualmente.
+- **Antes de usar:** rode [`supabase/convites.sql`](supabase/convites.sql) no SQL Editor do Supabase. Se você já tinha rodado antes, rode de novo: ele só acrescenta as colunas novas.
+- Os textos do convite ficam no próprio [`public/convite.html`](public/convite.html).

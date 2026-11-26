@@ -324,7 +324,7 @@ app.get('/api/painel/qrcode.png', exigirPainel, async (req, res) => {
 });
 
 // ---------- Convites digitais ----------
-app.use(require('./convites')({ supabase, exigirPainel, limparTexto, urlDoSite, config }));
+app.use(require('./convites')({ supabase, exigirPainel, limparTexto, iguais, urlDoSite }));
 
 // ---------- Bingo ----------
 app.use(require('./bingo')({

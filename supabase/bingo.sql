@@ -1,4 +1,5 @@
--- Bingo do casamento. Rode este script UMA vez no Supabase: SQL Editor → New query → colar → Run
+-- Bingo do casamento. Rode este script no Supabase: SQL Editor → New query → colar → Run
+-- Pode rodar de novo sem problema (só cria o que estiver faltando).
 
 -- Cada rodada do bingo (quando um ou mais convidados batem, a equipe começa uma nova)
 create table if not exists public.bingo_rodadas (
@@ -31,11 +32,20 @@ create table if not exists public.bingo_cartelas (
 
 create index if not exists bingo_cartelas_convidado_idx on public.bingo_cartelas (convidado_id);
 
+-- Compra de cartelas liberada pela noiva no painel (uma linha só)
+create table if not exists public.bingo_config (
+  id               int primary key default 1 check (id = 1),
+  vendas_liberadas boolean not null default false,
+  atualizada_em    timestamptz not null default now()
+);
+insert into public.bingo_config (id) values (1) on conflict (id) do nothing;
+
 -- Igual à tabela de fotos: RLS ligado e sem políticas, só o servidor do site acessa
 alter table public.bingo_rodadas   enable row level security;
 alter table public.bingo_sorteados enable row level security;
 alter table public.bingo_cartelas  enable row level security;
+alter table public.bingo_config    enable row level security;
 
 grant usage on schema public to service_role;
-grant select, insert, update, delete on table public.bingo_rodadas, public.bingo_sorteados, public.bingo_cartelas to service_role;
+grant select, insert, update, delete on table public.bingo_rodadas, public.bingo_sorteados, public.bingo_cartelas, public.bingo_config to service_role;
 grant usage, select on all sequences in schema public to service_role;

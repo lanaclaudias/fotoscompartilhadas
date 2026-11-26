@@ -219,7 +219,7 @@ if (window.self !== window.top) document.documentElement.classList.add('embutido
     $('desfazer').disabled = !ultimo;
     $('recentes').innerHTML = '';
     [...s].reverse().slice(1, 13).forEach((n) => { const x = document.createElement('span'); x.textContent = `${letra(n)} ${n}`; $('recentes').appendChild(x); });
-    $('rodada-tit').textContent = `Rodada ${estado.rodada || 1}${estado.vendasAbertas ? ' · vendas abertas' : ' · vendas fechadas'}`;
+    $('rodada-tit').textContent = `Rodada ${estado.rodada || 1}${!estado.vendasLiberadas ? ' · compra não liberada' : estado.vendasAbertas ? ' · vendas abertas' : ' · vendas fechadas'}`;
     document.querySelectorAll('.modo button').forEach((b) => b.classList.toggle('ativo', b.dataset.modo === estado.modo));
     if (novo.cartelasVendidas !== undefined) {
       $('vendidas').textContent = novo.cartelasVendidas;

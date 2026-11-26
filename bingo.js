@@ -108,6 +108,16 @@ function bancoSupabase(supabase) {
       falhou(error);
       return data;
     },
+    // Compra de cartelas liberada pela noiva no painel (linha única em bingo_config)
+    async vendasLiberadas() {
+      const { data, error } = await supabase.from('bingo_config').select('vendas_liberadas').eq('id', 1).maybeSingle();
+      falhou(error);
+      return !!(data && data.vendas_liberadas);
+    },
+    async definirVendasLiberadas(valor) {
+      const { error } = await supabase.from('bingo_config').upsert({ id: 1, vendas_liberadas: !!valor, atualizada_em: new Date().toISOString() });
+      falhou(error);
+    },
     async todasCartelas() {
       const linhas = [];
       for (let de = 0; ; de += 1000) {
@@ -131,13 +141,14 @@ module.exports = function rotasBingo({ supabase, banco, exigirPainel, limparText
   const PAGAMENTO = opcoes.pagamento || 'teste'; // 'teste' = confirma sem cobrar. InfinitePay entra aqui depois.
 
   const assinar = (numeros) => crypto.createHmac('sha256', segredo).update(`bingo:${numeros.join(',')}`).digest('hex').slice(0, 32);
-  const dados = (r) => ({
+  const dados = (r, liberadas) => ({
     rodada: r ? r.id : 0,
     modo: r ? r.modo : 'cheia',
     sorteados: r ? r.sorteados : [],
     ganhadores: r ? r.ganhadores : [],
     atualizadaEm: r ? r.atualizada_em : null,
-    vendasAbertas: !r || r.sorteados.length === 0,
+    vendasLiberadas: !!liberadas,
+    vendasAbertas: !!liberadas && (!r || r.sorteados.length === 0),
   });
   const cartelaCliente = (c) => ({ id: c.id, numero: Number(c.numero), nome: c.nome, numeros: c.numeros });
 
@@ -169,7 +180,8 @@ module.exports = function rotasBingo({ supabase, banco, exigirPainel, limparText
 
   // ---------- Convidados ----------
   router.get('/api/bingo/estado', tratar(async (req, res) => {
-    res.json({ ...dados(await db.rodadaAtual()), preco: PRECO, pagamento: PAGAMENTO, maxPorCompra: MAX_POR_COMPRA });
+    const [rodada, liberadas] = await Promise.all([db.rodadaAtual(), db.vendasLiberadas()]);
+    res.json({ ...dados(rodada, liberadas), preco: PRECO, pagamento: PAGAMENTO, maxPorCompra: MAX_POR_COMPRA });
   }));
 
   router.get('/api/bingo/cartelas', tratar(async (req, res) => {
@@ -198,7 +210,9 @@ module.exports = function rotasBingo({ supabase, banco, exigirPainel, limparText
         return res.status(400).json({ erro: 'Cartela inválida. Gere as cartelas de novo.' });
       }
     }
-    if (!dados(await db.rodadaAtual()).vendasAbertas) {
+    const liberadas = await db.vendasLiberadas();
+    if (!liberadas) return res.status(409).json({ erro: 'A compra de cartelas ainda não foi liberada pelos noivos.' });
+    if (!dados(await db.rodadaAtual(), liberadas).vendasAbertas) {
       return res.status(409).json({ erro: 'A rodada já começou. As vendas voltam a abrir na próxima rodada.' });
     }
     const atuais = await db.cartelasDoConvidado(convidadoId);
@@ -214,9 +228,9 @@ module.exports = function rotasBingo({ supabase, banco, exigirPainel, limparText
   // ---------- Equipe que sorteia (mesma senha do painel) ----------
   router.get('/api/bingo/admin/estado', exigirPainel, tratar(async (req, res) => {
     const rodada = await rodadaOuNova();
-    const cartelas = await db.todasCartelas();
+    const [cartelas, liberadas] = await Promise.all([db.todasCartelas(), db.vendasLiberadas()]);
     res.json({
-      ...dados(rodada),
+      ...dados(rodada, liberadas),
       cartelasVendidas: cartelas.length,
       compradores: new Set(cartelas.map((c) => c.convidado_id)).size,
     });
@@ -228,17 +242,23 @@ module.exports = function rotasBingo({ supabase, banco, exigirPainel, limparText
     const rodada = await rodadaOuNova();
     if ((req.body || {}).marcado === false) await db.desmarcarNumero(rodada.id, numero);
     else await db.marcarNumero(rodada.id, numero);
-    res.json(dados(await recalcular(rodada)));
+    res.json(dados(await recalcular(rodada), await db.vendasLiberadas()));
   }));
 
   router.post('/api/bingo/admin/modo', exigirPainel, tratar(async (req, res) => {
     const modo = (req.body || {}).modo === 'linha' ? 'linha' : 'cheia';
-    res.json(dados(await recalcular(await rodadaOuNova(), { modo })));
+    res.json(dados(await recalcular(await rodadaOuNova(), { modo }), await db.vendasLiberadas()));
   }));
 
   router.post('/api/bingo/admin/nova-rodada', exigirPainel, tratar(async (req, res) => {
     const modo = (req.body || {}).modo === 'linha' ? 'linha' : 'cheia';
-    res.json(dados(await db.criarRodada(modo)));
+    res.json(dados(await db.criarRodada(modo), await db.vendasLiberadas()));
+  }));
+
+  // Noiva libera (ou fecha) a compra de cartelas para os convidados
+  router.post('/api/bingo/admin/vendas', exigirPainel, tratar(async (req, res) => {
+    await db.definirVendasLiberadas((req.body || {}).liberar === true);
+    res.json(dados(await rodadaOuNova(), await db.vendasLiberadas()));
   }));
 
   return router;

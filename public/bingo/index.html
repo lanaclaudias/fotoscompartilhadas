@@ -440,9 +440,11 @@
 
     // Vendas
     $('vendas-fechadas').hidden = novo.vendasAbertas;
-    $('txt-fechadas').textContent = previas.length && !novo.vendasAbertas
-      ? 'A rodada começou antes de você confirmar, então essas cartelas não valem para esta rodada. As vendas abrem de novo na próxima.'
-      : 'A rodada já começou. As vendas abrem de novo na próxima rodada.';
+    $('txt-fechadas').textContent = !novo.vendasLiberadas
+      ? 'A compra de cartelas ainda não foi liberada. Os noivos vão abrir as vendas durante a festa.'
+      : previas.length && !novo.vendasAbertas
+        ? 'A rodada começou antes de você confirmar, então essas cartelas não valem para esta rodada. As vendas abrem de novo na próxima.'
+        : 'A rodada já começou. As vendas abrem de novo na próxima rodada.';
     $('vendas-abertas').hidden = !novo.vendasAbertas;
     $('preco-un').textContent = novo.preco ? `${reais(novo.preco)} cada` : '';
     $('aviso-teste').textContent = novo.pagamento === 'teste' ? 'Modo de teste: a compra é confirmada sem pagamento.' : '';
